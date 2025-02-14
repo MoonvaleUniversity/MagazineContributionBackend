@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,11 +15,17 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->bigInteger('academic_year_id')->nullable();
+            $table->bigInteger('faculty_id')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role',['marketing_manager','marketing_coordinator','admin','student','guest'])->default('student');
+            $table->boolean('is_suspended')->default(false);
             $table->rememberToken();
+            $table->integer('version')->default(1);
+            $table->foreignId('created_by')->nullable()->constrained(User::table);
+            $table->foreignId('updated_by')->nullable()->constrained(User::table);
             $table->timestamps();
         });
 
