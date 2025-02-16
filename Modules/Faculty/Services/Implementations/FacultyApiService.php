@@ -2,9 +2,9 @@
 
 namespace Modules\Faculty\Services\Implementations;
 
-use Modules\Faculty\Services\FacultyApiInterface;
+use Modules\Faculty\Services\FacultyApiServiceInterface;
 
-class FacultyApiService implements FacultyApiInterface
+class FacultyApiService implements FacultyApiServiceInterface
 {
     public function get()
     {

@@ -1,20 +1,20 @@
 <?php
 
-namespace Modules\AcademicYear\App\Providers;
+namespace Modules\Authentication\App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Modules\AcademicYear\Services\AcademicYearApiServiceInterface;
-use Modules\AcademicYear\Services\Implementations\AcademicYearApiService;
+use Modules\Authentication\Services\AuthenticationApiServiceInterface;
+use Modules\Authentication\Services\Implementations\AuthenticationApiService;
 
-class AcademicYearServiceProvider extends ServiceProvider
+class AuthenticationServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
      */
     public function register(): void
     {
-        $this->app->bind(AcademicYearApiServiceInterface::class, AcademicYearApiService::class);
+        $this->app->bind(AuthenticationApiServiceInterface::class, AuthenticationApiService::class);
     }
 
     /**

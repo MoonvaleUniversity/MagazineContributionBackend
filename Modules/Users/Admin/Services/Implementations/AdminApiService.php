@@ -2,9 +2,9 @@
 
 namespace Modules\Users\Admin\Services\Implementations;
 
-use Modules\Users\Admin\Services\AdminApiInterface;
+use Modules\Users\Admin\Services\AdminApiServiceInterface;
 
-class AdminApiService implements AdminApiInterface
+class AdminApiService implements AdminApiServiceInterface
 {
     public function get()
     {

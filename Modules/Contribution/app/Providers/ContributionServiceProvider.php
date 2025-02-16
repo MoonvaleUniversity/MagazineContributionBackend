@@ -2,8 +2,9 @@
 
 namespace Modules\Contribution\App\Providers;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Modules\Contribution\Services\ContributionApiInterface;
+use Modules\Contribution\Services\ContributionApiServiceInterface;
 use Modules\Contribution\Services\Implementations\ContributionApiService;
 
 class ContributionServiceProvider extends ServiceProvider
@@ -13,7 +14,7 @@ class ContributionServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(ContributionApiInterface::class, ContributionApiService::class);
+        $this->app->bind(ContributionApiServiceInterface::class, ContributionApiService::class);
     }
 
     /**
@@ -21,7 +22,11 @@ class ContributionServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
-        $this->loadRoutesFrom(__DIR__.'/../../routes/api_v1.0.php');
+        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
+        Route::prefix('api/v1')
+            ->middleware('api') // Apply any middleware if needed
+            ->group(function () {
+                require __DIR__ . '/../../routes/api_v1.0.php';
+            });
     }
 }

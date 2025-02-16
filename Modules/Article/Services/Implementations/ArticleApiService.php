@@ -2,9 +2,9 @@
 
 namespace Modules\Article\Services\Implementations;
 
-use Modules\Article\Services\ArticleApiInterface;
+use Modules\Article\Services\ArticleApiServiceInterface;
 
-class ArticleApiService implements ArticleApiInterface
+class ArticleApiService implements ArticleApiServiceInterface
 {
     public function get()
     {

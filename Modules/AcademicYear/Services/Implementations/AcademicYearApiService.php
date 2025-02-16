@@ -2,9 +2,9 @@
 
 namespace Modules\AcademicYear\Services\Implementations;
 
-use Modules\AcademicYear\Services\AcademicYearApiInterface;
+use Modules\AcademicYear\Services\AcademicYearApiServiceInterface;
 
-class AcademicYearApiService implements AcademicYearApiInterface
+class AcademicYearApiService implements AcademicYearApiServiceInterface
 {
     public function get()
     {

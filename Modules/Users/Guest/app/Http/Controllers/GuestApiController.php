@@ -4,11 +4,11 @@ namespace Modules\Users\Guest\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Users\Guest\Services\GuestApiInterface;
+use Modules\Users\Guest\Services\GuestApiServiceInterface;
 
 class GuestApiController extends Controller
 {
-    public function __construct(protected GuestApiInterface $guestApiService) {}
+    public function __construct(protected GuestApiServiceInterface $guestApiService) {}
 
     /**
      * Display a listing of the resource.

@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\Contribution\Services;
+namespace Modules\Users\Coordinator\Services;
 
-interface ContributionApiInterface
+interface CoordinatorApiServiceInterface
 {
 
     public function get();

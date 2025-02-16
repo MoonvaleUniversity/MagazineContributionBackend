@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\Faculty\Services;
+namespace Modules\Contribution\Services;
 
-interface FacultyApiInterface
+interface ContributionApiServiceInterface
 {
 
     public function get();

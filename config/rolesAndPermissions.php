@@ -1,109 +1,83 @@
 <?php
 
 return [
-    'guards' => [
+    // Default guard to use if not specified
+    'default-guard' => 'api',
+
+    // Common actions (prevents repetition)
+    'common-actions' => ['view', 'create', 'edit', 'delete'],
+
+    //Permissions and Actions
+    'permissions' => [
         'academic-year' => [
-            'actions' => [
-                'view',
-                'create',
-                'edit',
-                'delete'
-            ]
+            // 'guard' => 'api', /* Custom guard if not set, default guard is used */
+            'common-actions' => true,
+            'actions' => [],
         ],
-        'article' =>
-        [
-            'actions' => [
-                'view',
-                'create',
-                'edit',
-                'delete'
-            ]
+
+        'article' => [
+            'common-actions' => true,
+            'actions' => [],
         ],
-        'closure-date' =>
-        [
-            'actions' => [
-                'view',
-                'create',
-                'edit',
-                'delete'
-            ]
+
+        'closure-date' => [
+            'common-actions' => true,
+            'actions' => [],
         ],
-        'contribution' =>
-        [
-            'actions' => [
-                'view',
-                'create',
-                'edit',
-                'delete'
-            ]
+
+        'contribution' => [
+            'common-actions' => true,
+            'actions' => [],
         ],
-        'faculty' =>
-        [
-            'actions' => [
-                'view',
-                'create',
-                'edit',
-                'delete'
-            ]
+
+        'faculty' => [
+            'common-actions' => true,
+            'actions' => [],
         ],
-        'admin' =>
-        [
-            'actions' => [
-                'view',
-                'create',
-                'edit',
-                'delete'
-            ]
-        ],
-        'marketing-manager' =>
-        [
-            'actions' => [
-                'view',
-                'create',
-                'edit',
-                'delete'
-            ]
-        ],
-        'marketing-coordinator' =>
-        [
-            'actions' => [
-                'view',
-                'create',
-                'edit',
-                'delete'
-            ]
-        ],
-        'student' => [
-            'actions' => [
-                'view',
-                'create',
-                'edit',
-                'delete'
-            ]
-        ],
-        'guest' => [
-            'actions' => [
-                'view',
-                'create',
-                'edit',
-                'delete'
-            ]
-        ],
-    ],
-    'roles' => [
+
         'admin' => [
-            'permissions' => []
+            'common-actions' => true,
+            'actions' => [],
         ],
+
         'marketing-manager' => [
-            'permissions' => []
+            'common-actions' => true,
+            'actions' => [],
         ],
+
         'marketing-coordinator' => [
-            'permissions' => []
+            'common-actions' => true,
+            'actions' => [],
         ],
+
         'student' => [
+            'common-actions' => true,
+            'actions' => [],
+        ],
+
+        'guest' => [
+            'common-actions' => true,
+            'actions' => [],
+        ],
+
+    ],
+
+    //Roles and Permissions
+    'roles' => [
+        'Admin' => [
+            // 'guard' => 'web',  /* Custom guard if not set, default guard is used */
             'permissions' => []
         ],
-        'guest' => [
+        'Marketing Manager' => [
+            'permissions' => []
+        ],
+        'Marketing Coordinator' => [
+            'permissions' => []
+        ],
+        'Student' => [
+            'permissions' => []
+        ],
+        'Guest' => [
             'permissions' => []
         ],
     ]

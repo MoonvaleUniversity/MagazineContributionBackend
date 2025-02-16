@@ -4,12 +4,12 @@ namespace Modules\Faculty\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Faculty\Services\FacultyApiInterface;
+use Modules\Faculty\Services\FacultyApiServiceInterface;
 
 class FacultyApiController extends Controller
 {
-    public function __construct(protected FacultyApiInterface $facultyApiService) {}
-    
+    public function __construct(protected FacultyApiServiceInterface $facultyApiService) {}
+
     /**
      * Display a listing of the resource.
      */

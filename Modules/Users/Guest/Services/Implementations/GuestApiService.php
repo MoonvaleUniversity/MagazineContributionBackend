@@ -2,9 +2,9 @@
 
 namespace Modules\Users\Guest\Services\Implementations;
 
-use Modules\Users\Guest\Services\GuestApiInterface;
+use Modules\Users\Guest\Services\GuestApiServiceInterface;
 
-class GuestApiService implements GuestApiInterface
+class GuestApiService implements GuestApiServiceInterface
 {
     public function get()
     {

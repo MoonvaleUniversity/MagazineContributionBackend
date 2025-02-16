@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\Users\Student\Services;
+namespace Modules\Users\Manager\Services;
 
-interface StudentApiInterface
+interface ManagerApiServiceInterface
 {
 
     public function get();
