@@ -1,15 +1,18 @@
 <?php
 
 namespace Modules\Authentication\App\Http\Controllers;
-
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use App\Http\Requests\UserRoleRequest;
-use App\Http\Requests\UserStoreRequest;
+use Modules\Authentication\App\Http\Requests\UserRoleRequest;
+use Modules\Authentication\App\Http\Requests\UserStoreRequest;
 use Modules\Authentication\Services\AuthenticationApiServiceInterface;
+use Modules\Authentication\App\Http\Resources\UserResourceApi;
+
+
+
 
 class AuthenticationController extends Controller
 {
@@ -20,9 +23,10 @@ class AuthenticationController extends Controller
      */
     public function index()
     {
-        $user = User::get()->all();
+        $user = User::all();
+        $data = UserResourceApi::collection($user);
         return response()->json([
-            'users' => $user
+            'users' => $data
         ]);
     }
 
@@ -39,13 +43,13 @@ class AuthenticationController extends Controller
         return response()->json(['users' => $user, 'tokens' => $token, 'message' => 'Register Successfully']);
     }
 
-    // // Users login section
+    // Users login section
     public function login(UserRoleRequest $request)
     {
-            $user = User::where('email', $request->email)->first();
-        if($user->is_email_verify != true){
-            return response()->json(['message' => "Need to verify first!"]);
-        }
+        $user = User::where('email', $request->email)->first();
+        // if($user->is_email_verify != true){
+        //     return response()->json(['message' => "Need to verify first!"]);
+        // }
         if (! $user || $request->role !== $user->role || ! Hash::check($request->password, $user->password)) {
             return response()->json(["message" => "Invalid Credentials"]);
         }
@@ -89,6 +93,12 @@ class AuthenticationController extends Controller
         }
         $user->update(['is_email_verify'=>true, 'email_verified_at'=> now()]);
         return response()->json(['status'  => 'success','message' => 'Verified successfully']);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+        return response()->json(['message' => 'Logged out successfully']);
     }
 
 
