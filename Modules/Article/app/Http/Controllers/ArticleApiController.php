@@ -4,11 +4,11 @@ namespace Modules\Article\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Article\Services\ArticleApiInterface;
+use Modules\Article\Services\ArticleApiServiceInterface;
 
 class ArticleApiController extends Controller
 {
-    public function __construct(protected ArticleApiInterface $articleApiService) {}
+    public function __construct(protected ArticleApiServiceInterface $articleApiService) {}
 
     /**
      * Display a listing of the resource.

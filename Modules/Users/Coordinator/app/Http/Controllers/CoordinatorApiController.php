@@ -4,11 +4,11 @@ namespace Modules\Users\Coordinator\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Users\Coordinator\Services\CoordinatorApiInterface;
+use Modules\Users\Coordinator\Services\CoordinatorApiServiceInterface;
 
 class CoordinatorApiController extends Controller
 {
-    public function __construct(protected CoordinatorApiInterface $coordinatorApiService) {}
+    public function __construct(protected CoordinatorApiServiceInterface $coordinatorApiService) {}
 
     /**
      * Display a listing of the resource.

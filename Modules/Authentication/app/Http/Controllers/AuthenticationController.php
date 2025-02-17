@@ -1,16 +1,16 @@
 <?php
 
-namespace Modules\Contribution\App\Http\Controllers;
+namespace Modules\Authentication\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Contribution\Services\ContributionApiServiceInterface;
+use Modules\Authentication\Services\AuthenticationApiServiceInterface;
 
-class ContributionApiController extends Controller
+class AuthenticationController extends Controller
 {
-    public function __construct(protected ContributionApiServiceInterface $contributionApiService) {}
+    public function __construct(protected AuthenticationApiServiceInterface $authenticationApiService) {}
 
-    /**
+     /**
      * Display a listing of the resource.
      */
     public function index()

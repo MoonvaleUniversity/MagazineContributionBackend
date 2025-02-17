@@ -2,9 +2,9 @@
 
 namespace Modules\Users\Student\Services\Implementations;
 
-use Modules\Users\Student\Services\StudentApiInterface;
+use Modules\Users\Student\Services\StudentApiServiceInterface;
 
-class StudentApiService implements StudentApiInterface
+class StudentApiService implements StudentApiServiceInterface
 {
     public function get()
     {

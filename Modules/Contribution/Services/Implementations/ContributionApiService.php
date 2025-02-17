@@ -2,9 +2,9 @@
 
 namespace Modules\Contribution\Services\Implementations;
 
-use Modules\Contribution\Services\ContributionApiInterface;
+use Modules\Contribution\Services\ContributionApiServiceInterface;
 
-class ContributionApiService implements ContributionApiInterface
+class ContributionApiService implements ContributionApiServiceInterface
 {
     public function get()
     {

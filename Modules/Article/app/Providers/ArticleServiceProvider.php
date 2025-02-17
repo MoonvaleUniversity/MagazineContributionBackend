@@ -2,8 +2,9 @@
 
 namespace Modules\Article\App\Providers;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Modules\Article\Services\ArticleApiInterface;
+use Modules\Article\Services\ArticleApiServiceInterface;
 use Modules\Article\Services\Implementations\ArticleApiService;
 
 class ArticleServiceProvider extends ServiceProvider
@@ -13,7 +14,7 @@ class ArticleServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(ArticleApiInterface::class, ArticleApiService::class);
+        $this->app->bind(ArticleApiServiceInterface::class, ArticleApiService::class);
     }
 
     /**
@@ -21,7 +22,11 @@ class ArticleServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
-        $this->loadRoutesFrom(__DIR__.'/../../routes/api_v1.0.php');
+        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
+        Route::prefix('api/v1')
+            ->middleware('api') // Apply any middleware if needed
+            ->group(function () {
+                require __DIR__ . '/../../routes/api_v1.0.php';
+            });
     }
 }

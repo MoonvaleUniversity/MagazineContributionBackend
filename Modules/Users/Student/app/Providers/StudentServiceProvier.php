@@ -2,9 +2,10 @@
 
 namespace Modules\Users\Student\App\Providers;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Modules\Users\Student\Services\Implementations\StudentApiService;
-use Modules\Users\Student\Services\StudentApiInterface;
+use Modules\Users\Student\Services\StudentApiServiceInterface;
 
 class StudentServiceProvier extends ServiceProvider
 {
@@ -13,7 +14,7 @@ class StudentServiceProvier extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(StudentApiInterface::class, StudentApiService::class);
+        $this->app->bind(StudentApiServiceInterface::class, StudentApiService::class);
     }
 
     /**
@@ -22,6 +23,10 @@ class StudentServiceProvier extends ServiceProvider
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
-        $this->loadRoutesFrom(__DIR__ . '/../../routes/api_v1.0.php');
+        Route::prefix('api/v1')
+            ->middleware('api') // Apply any middleware if needed
+            ->group(function () {
+                require __DIR__ . '/../../routes/api_v1.0.php';
+            });
     }
 }

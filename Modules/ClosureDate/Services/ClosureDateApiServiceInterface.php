@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\Users\Manager\Services;
+namespace Modules\ClosureDate\Services;
 
-interface ManagerApiInterface
+interface ClosureDateApiServiceInterface
 {
 
     public function get();

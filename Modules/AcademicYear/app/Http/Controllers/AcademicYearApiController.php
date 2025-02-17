@@ -4,11 +4,11 @@ namespace Modules\AcademicYear\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\AcademicYear\Services\AcademicYearApiInterface;
+use Modules\AcademicYear\Services\AcademicYearApiServiceInterface;
 
 class AcademicYearApiController extends Controller
 {
-    public function __construct(protected AcademicYearApiInterface $academicYearApiService) {}
+    public function __construct(protected AcademicYearApiServiceInterface $academicYearApiService) {}
     /**
      * Display a listing of the resource.
      */

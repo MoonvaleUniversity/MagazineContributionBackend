@@ -4,11 +4,11 @@ namespace Modules\ClosureDate\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\ClosureDate\Services\ClosureDateApiInterface;
+use Modules\ClosureDate\Services\ClosureDateApiServiceInterface;
 
 class ClosureDateApiController extends Controller
 {
-    public function __construct(protected ClosureDateApiInterface $closureDateApiService) {}
+    public function __construct(protected ClosureDateApiServiceInterface $closureDateApiService) {}
 
     /**
      * Display a listing of the resource.

@@ -2,9 +2,9 @@
 
 namespace Modules\Users\Manager\Services\Implementations;
 
-use Modules\Users\Manager\Services\ManagerApiInterface;
+use Modules\Users\Manager\Services\ManagerApiServiceInterface;
 
-class ManagerApiService implements ManagerApiInterface
+class ManagerApiService implements ManagerApiServiceInterface
 {
     public function get()
     {

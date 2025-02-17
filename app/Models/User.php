@@ -11,11 +11,12 @@ use Modules\AcademicYear\App\Models\AcademicYear;
 use Modules\Article\App\Models\Article;
 use Modules\Contribution\App\Models\Contribution;
 use Modules\Faculty\App\Models\Faculty;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens, HasRoles;
 
     const table = 'users';
     const id = 'id';

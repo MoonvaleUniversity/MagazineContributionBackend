@@ -2,7 +2,7 @@
 
 namespace Modules\AcademicYear\Services;
 
-interface AcademicYearApiInterface {
+interface AcademicYearApiServiceInterface {
     public function get();
 
     public function getAll();

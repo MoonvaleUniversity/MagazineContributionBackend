@@ -2,9 +2,9 @@
 
 namespace Modules\Users\Coordinator\Services\Implementations;
 
-use Modules\Users\Coordinator\Services\CoordinatorApiInterface;
+use Modules\Users\Coordinator\Services\CoordinatorApiServiceInterface;
 
-class CoordinatorApiService implements CoordinatorApiInterface
+class CoordinatorApiService implements CoordinatorApiServiceInterface
 {
     public function get()
     {

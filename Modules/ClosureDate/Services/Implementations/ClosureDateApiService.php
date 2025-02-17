@@ -2,9 +2,9 @@
 
 namespace Modules\ClosureDate\Services\Implementations;
 
-use Modules\ClosureDate\Services\ClosureDateApiInterface;
+use Modules\ClosureDate\Services\ClosureDateApiServiceInterface;
 
-class ClosureDateApiService implements ClosureDateApiInterface
+class ClosureDateApiService implements ClosureDateApiServiceInterface
 {
     public function get()
     {

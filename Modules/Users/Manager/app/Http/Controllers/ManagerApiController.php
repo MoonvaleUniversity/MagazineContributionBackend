@@ -4,11 +4,11 @@ namespace Modules\Users\Manager\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Users\Manager\Services\ManagerApiInterface;
+use Modules\Users\Manager\Services\ManagerApiServiceInterface;
 
 class ManagerApiController extends Controller
 {
-    public function __construct(protected ManagerApiInterface $managerApiService) {}
+    public function __construct(protected ManagerApiServiceInterface $managerApiService) {}
 
     /**
      * Display a listing of the resource.

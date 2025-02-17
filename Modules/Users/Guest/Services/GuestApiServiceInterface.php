@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\Users\Coordinator\Services;
+namespace Modules\Users\Guest\Services;
 
-interface CoordinatorApiInterface
+interface GuestApiServiceInterface
 {
 
     public function get();
