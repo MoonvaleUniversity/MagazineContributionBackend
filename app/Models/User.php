@@ -24,6 +24,7 @@ class User extends Authenticatable
     const academic_year_id = 'academic_year_id';
     const faculty_id = 'faculty_id';
     const email = 'email';
+    const is_email_verified = 'is_email_verified';
     const email_verified_at = 'email_verified_at';
     const password = 'password';
     const is_suspended = 'is_suspended';
