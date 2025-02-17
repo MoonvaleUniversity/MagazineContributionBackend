@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\UserRoleRequest;
+use Modules\Shared\Email\EmailService;
 use App\Http\Requests\UserStoreRequest;
+use Modules\Shared\Email\EmailServiceInterface;
 
 class AuthController extends Controller
 {
@@ -52,6 +54,15 @@ class AuthController extends Controller
         return response()->json(['userId' => $id]);
     }
 
+    protected $emailVerifyService;
+
+    // Inject EmailServiceInterface into the controller
+    public function __construct(EmailServiceInterface $emailVerifyService)
+    {
+        $this->emailVerifyService = $emailVerifyService;
+    }
+
+
     // Mail sent for Verification
     public function verifyPost($id){
     $user = User::find($id);
@@ -59,10 +70,7 @@ class AuthController extends Controller
         return response()->json(['status'  => 'error','message' => 'User not found'], 404);
     }
         $email = $user->email;
-        Mail::send('mail', ['userId' => $user->id], function($message) use ($email) {
-            $message->to($email)
-                    ->subject('Email Verification');
-        });
+        $this->emailVerifyService->sendVerificationEmail($user->id, $email);
             return response()->json(['status'  => 'success','message' => 'Verification email sent successfully']);
 }
 

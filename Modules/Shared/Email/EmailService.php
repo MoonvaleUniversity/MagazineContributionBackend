@@ -14,13 +14,6 @@ class EmailService implements EmailServiceInterface
      * @return void
      */
 
-     protected $emailService;
-
-    // Inject EmailServiceInterface into the controller
-    public function __construct(EmailServiceInterface $emailService)
-    {
-        $this->emailService = $emailService;
-    }
 
     public function sendVerificationEmail(int $userId, string $email): void
     {
