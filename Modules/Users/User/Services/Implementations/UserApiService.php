@@ -26,18 +26,13 @@ class UserApiService implements UserApiServiceInterface
         });
     }
 
-    public function getAll($relations = null, $limit = null, $offset = null, $noPagination = null, $pagPerPage = null, $role = null)
+    public function getAll($relations = null, $limit = null, $offset = null, $noPagination = null, $pagPerPage = null, $conds = null)
     {
         //read db connection
         $readConnection = config('constants.database.read');
-        $param = [$relations, $limit, $offset, $noPagination, $pagPerPage, $role];
-        return Cache::remember(UserCache::GET_ALL_KEY, UserCache::GET_ALL_EXPIRY, $param, function () use ($relations, $limit, $offset, $noPagination, $pagPerPage, $readConnection, $role) {
+        $param = [$relations, $limit, $offset, $noPagination, $pagPerPage, $conds];
+        return Cache::remember(UserCache::GET_ALL_KEY, UserCache::GET_ALL_EXPIRY, $param, function () use ($relations, $limit, $offset, $noPagination, $pagPerPage, $readConnection, $conds) {
             $users = User::on($readConnection)
-                ->when($role, function ($q, $role) {
-                    $q->whereHas('roles', function ($query) use ($role) {
-                        $query->where('name', $role);
-                    });
-                })
                 ->when($relations, function ($q, $relations) {
                     $q->with($relations);
                 })
@@ -46,6 +41,9 @@ class UserApiService implements UserApiServiceInterface
                 })
                 ->when($offset, function ($q, $offset) {
                     $q->offset($offset);
+                })
+                ->when($conds, function ($q, $conds) {
+                    $this->searching($q, $conds);
                 });
 
             $users = (!$noPagination || $pagPerPage) ? $users->paginate($pagPerPage) : $users->get();
@@ -67,5 +65,23 @@ class UserApiService implements UserApiServiceInterface
     public function delete()
     {
         //write db connection
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    /// Private Functions
+    ////////////////////////////////////////////////////////////////////
+
+    //-------------------------------------------------------------------
+    // Database
+    //-------------------------------------------------------------------
+    private function searching($query, $conds)
+    {
+        $query->when(isset($conds['role']), function ($q) use ($conds) {
+            $q->whereHas('roles', function ($query) use ($conds) {
+                $query->where('name', $conds['role']);
+            });
+        });
+
+        return $query;
     }
 }

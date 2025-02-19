@@ -12,19 +12,17 @@ use App\Http\Requests\UserStoreRequest;
 use Modules\Authentication\Services\AuthenticationApiServiceInterface;
 use Modules\Users\User\Services\UserApiServiceInterface;
 
-class AuthenticationController extends Controller
+class AuthenticationApiController extends Controller
 {
     public function __construct(protected AuthenticationApiServiceInterface $authenticationApiService, protected UserApiServiceInterface $userApiService) {}
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function loginUser(Request $request)
     {
-        $user = User::get()->all();
-        return response()->json([
-            'users' => $user
-        ]);
+        $data = $request->user();
+        return apiResponse(true, 'Data retrived successfully', $data);
     }
 
     // Admin will create users according to their suitable role
@@ -94,38 +92,5 @@ class AuthenticationController extends Controller
         }
         $user->update(['is_email_verify' => true, 'email_verified_at' => now()]);
         return response()->json(['status'  => 'success', 'message' => 'Verified successfully']);
-    }
-
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

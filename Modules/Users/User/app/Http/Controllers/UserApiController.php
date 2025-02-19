@@ -16,7 +16,7 @@ class UserApiController extends Controller
      */
     public function index()
     {
-        $users = $this->userApiService->getAll(role: 'Admin');
+        $users = $this->userApiService->getAll();
         $data = UserApiResource::collection($users);
         return apiResponse(true, 'Data retrived successfully', $data);
     }
@@ -34,7 +34,9 @@ class UserApiController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = $this->userApiService->get($id);
+        $data = new UserApiResource($user);
+        return apiResponse(true, 'Data retrived successfully', $data);
     }
 
     /**

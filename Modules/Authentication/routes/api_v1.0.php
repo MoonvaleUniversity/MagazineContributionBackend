@@ -2,17 +2,15 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Modules\Authentication\App\Http\Controllers\AuthenticationController;
+use Modules\Authentication\App\Http\Controllers\AuthenticationApiController;
 
-Route::post('/api/login',[AuthenticationController::class, 'login']);
-Route::post('/api/register',[AuthenticationController::class, 'register']);
+Route::post('/login',[AuthenticationApiController::class, 'login']);
+Route::post('/register',[AuthenticationApiController::class, 'register']);
 
-Route::get('/api/email_verifying/{id}', [AuthenticationController::class,'verifyEmail']);
-Route::post('/api/email_verification_sending/{id}', [AuthenticationController::class,'verifyPost']);
-Route::get('/api/confirmed_email_verification/{id}', [AuthenticationController::class, 'verificationPage'])->name('verificationPage');
-Route::post('/api/confirmed_email_verification/{id}', [AuthenticationController::class, 'verificationPost']);
+Route::get('/email_verifying/{id}', [AuthenticationApiController::class,'verifyEmail']);
+Route::post('/email_verification_sending/{id}', [AuthenticationApiController::class,'verifyPost']);
+Route::get('/confirmed_email_verification/{id}', [AuthenticationApiController::class, 'verificationPage'])->name('verificationPage');
+Route::post('/confirmed_email_verification/{id}', [AuthenticationApiController::class, 'verificationPost']);
 
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::get('/login-user', [AuthenticationApiController::class, 'loginUser'])->middleware('auth:sanctum');
