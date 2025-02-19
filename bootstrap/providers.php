@@ -14,5 +14,5 @@ return [
     Modules\Users\Guest\App\Providers\GuestServiceProvier::class,
     Modules\Users\Manager\App\Providers\ManagerServiceProvier::class,
     Modules\Users\Student\App\Providers\StudentServiceProvier::class,
-
+    Modules\Users\User\App\Providers\UserServiceProvier::class,
 ];

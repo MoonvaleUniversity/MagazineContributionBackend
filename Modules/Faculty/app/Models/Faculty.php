@@ -2,7 +2,7 @@
 
 namespace Modules\Faculty\App\Models;
 
-use App\Models\User;
+use Modules\Users\User\App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Faculty extends Model

@@ -2,7 +2,7 @@
 
 namespace Modules\AcademicYear\App\Models;
 
-use App\Models\User;
+use Modules\Users\User\App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Modules\ClosureDate\App\Models\ClosureDate;
 
