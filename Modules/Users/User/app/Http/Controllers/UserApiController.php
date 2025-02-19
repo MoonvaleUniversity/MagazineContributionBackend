@@ -4,6 +4,7 @@ namespace Modules\Users\User\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Users\User\App\Http\Resources\UserApiResource;
 use Modules\Users\User\Services\UserApiServiceInterface;
 
 class UserApiController extends Controller
@@ -15,7 +16,9 @@ class UserApiController extends Controller
      */
     public function index()
     {
-        //
+        $users = $this->userApiService->getAll(role: 'Admin');
+        $data = UserApiResource::collection($users);
+        return apiResponse(true, 'Data retrived successfully', $data);
     }
 
     /**

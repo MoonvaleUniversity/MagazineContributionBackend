@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Authentication\App\Http\Controllers\AuthenticationController;
 
-Route::get('/api/users',[AuthenticationController::class, 'index']);
 Route::post('/api/login',[AuthenticationController::class, 'login']);
 Route::post('/api/register',[AuthenticationController::class, 'register']);
 

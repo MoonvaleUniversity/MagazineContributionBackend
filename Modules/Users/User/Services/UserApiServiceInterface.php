@@ -6,7 +6,7 @@ interface UserApiServiceInterface
 {
     public function get($id = null, $relations = null);
 
-    public function getAll();
+    public function getAll($relations = null, $limit = null, $offset = null, $noPagination = null, $pagPerPage = null, $role = null);
 
     public function create();
 

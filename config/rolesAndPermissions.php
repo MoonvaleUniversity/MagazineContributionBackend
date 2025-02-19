@@ -2,7 +2,7 @@
 
 return [
     // Default guard to use if not specified
-    'default-guard' => 'api',
+    'default-guard' => 'web',
 
     // Common actions (prevents repetition)
     'common-actions' => ['view', 'create', 'edit', 'delete'],
