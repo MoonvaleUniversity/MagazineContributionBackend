@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UserRoleRequest extends FormRequest
 {
@@ -24,7 +26,7 @@ class UserRoleRequest extends FormRequest
         return [
             'email'    => 'required|email',
             'password' => 'required',
-            'role'     => 'required|in:marketing_manager,marketing_coordinator,admin,student,guest',
+            'role' => ['required', Rule::in(Role::values())],
         ];
     }
 }

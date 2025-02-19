@@ -4,23 +4,27 @@ namespace Modules\Users\User\Services\Implementations;
 
 use App\Config\Cache\UserCache;
 use App\Facades\Cache;
+use Illuminate\Database\Eloquent\Builder;
 use Modules\Users\User\App\Models\User;
 use Modules\Users\User\Services\UserApiServiceInterface;
 
 class UserApiService implements UserApiServiceInterface
 {
-    public function get($id = null, $relations = null)
+    public function get($id = null, $relations = null, array $conds = null)
     {
         //read db connection
         $readConnection = config('constants.database.read');
-        $param = [$id, $relations];
-        return Cache::remember(UserCache::GET_KEY, UserCache::GET_EXPIRY, $param, function () use ($id, $relations, $readConnection) {
+        $param = [$id, $relations, $conds];
+        return Cache::remember(UserCache::GET_KEY, UserCache::GET_EXPIRY, $param, function () use ($id, $relations, $conds, $readConnection) {
             return User::on($readConnection)
                 ->when($id, function ($q, $id) {
                     $q->where(User::id, $id);
                 })
                 ->when($relations, function ($q, $relations) {
                     $q->with($relations);
+                })
+                ->when($conds, function ($q, $conds) {
+                    $this->searching($q, $conds);
                 })
                 ->first();
         });
@@ -74,13 +78,17 @@ class UserApiService implements UserApiServiceInterface
     //-------------------------------------------------------------------
     // Database
     //-------------------------------------------------------------------
-    private function searching($query, $conds)
+    private function searching(Builder $query, $conds)
     {
-        $query->when(isset($conds['role']), function ($q) use ($conds) {
-            $q->whereHas('roles', function ($query) use ($conds) {
-                $query->where('name', $conds['role']);
+        $query
+            ->when(isset($conds['role']), function ($q) use ($conds) {
+                $q->whereHas('roles', function ($query) use ($conds) {
+                    $query->where('name', $conds['role']);
+                });
+            })
+            ->when(isset($conds['email']), function ($q) use ($conds) {
+                $q->where(User::email, $conds['email']);
             });
-        });
 
         return $query;
     }

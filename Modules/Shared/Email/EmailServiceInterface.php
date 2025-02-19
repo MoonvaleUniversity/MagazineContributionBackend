@@ -1,18 +1,18 @@
 <?php
+
 namespace Modules\Shared\Email;
 
-
-interface EmailServiceInterface{
+interface EmailServiceInterface
+{
 
     /**
-     * Handle single file upload.
+     * Send mail
      *
-     * @param string $email mail.
-     * @param int $userId id of an user:
-     * @return
+     * @param string $view View file path of the email.
+     * @param int $email Email to send.
+     * @param string $subject Subject of the email.
+     * @param array $data Data to pass into email view file.
+     * @return void
      */
-    public function sendVerificationEmail(int $userId,string  $email): void;
-
+    public function send(string $view, string $email, string $subject, array $data);
 }
-
-?>

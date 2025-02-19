@@ -2,19 +2,20 @@
 
 namespace Modules\Authentication\App\Http\Controllers;
 
+use App\Enums\Role;
 use Modules\Users\User\App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\UserRoleRequest;
 use App\Http\Requests\UserStoreRequest;
 use Modules\Authentication\Services\AuthenticationApiServiceInterface;
+use Modules\Shared\Email\EmailServiceInterface;
 use Modules\Users\User\Services\UserApiServiceInterface;
 
 class AuthenticationApiController extends Controller
 {
-    public function __construct(protected AuthenticationApiServiceInterface $authenticationApiService, protected UserApiServiceInterface $userApiService) {}
+    public function __construct(protected AuthenticationApiServiceInterface $authenticationApiService, protected UserApiServiceInterface $userApiService, protected EmailServiceInterface $emailService) {}
 
     /**
      * Display a listing of the resource.
@@ -41,8 +42,8 @@ class AuthenticationApiController extends Controller
     // // Users login section
     public function login(UserRoleRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
-        if ($user->is_email_verify != true) {
+        $user = $this->userApiService->get(conds: ['email' => $request->email]);
+        if (!$user->email_verified_at) {
             return response()->json(['message' => "Need to verify first!"]);
         }
         if (! $user || $request->role !== $user->role || ! Hash::check($request->password, $user->password)) {
@@ -64,11 +65,10 @@ class AuthenticationApiController extends Controller
         if (!$user) {
             return response()->json(['status'  => 'error', 'message' => 'User not found'], 404);
         }
+
         $email = $user->email;
-        Mail::send('mail', ['userId' => $user->id], function ($message) use ($email) {
-            $message->to($email)
-                ->subject('Email Verification');
-        });
+        $this->emailService->send('mail', $email, 'Email Verification', ['userId' => $user->id]);
+
         return response()->json(['status'  => 'success', 'message' => 'Verification email sent successfully']);
     }
 
@@ -90,7 +90,7 @@ class AuthenticationApiController extends Controller
         if ($user->is_email_verify) {
             return response()->json(['status'  => 'error', 'message' => 'User is already verified']);
         }
-        $user->update(['is_email_verify' => true, 'email_verified_at' => now()]);
+        $user->update(['email_verified_at' => now()]);
         return response()->json(['status'  => 'success', 'message' => 'Verified successfully']);
     }
 }
