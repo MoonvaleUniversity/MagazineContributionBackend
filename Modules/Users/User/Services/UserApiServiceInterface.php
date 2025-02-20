@@ -34,7 +34,7 @@ interface UserApiServiceInterface
      */
     public function getAll($relations = null, $limit = null, $offset = null, $noPagination = null, $pagPerPage = null, $conds = null);
 
-    public function create();
+    public function create($userData, $role);
 
     public function update();
 

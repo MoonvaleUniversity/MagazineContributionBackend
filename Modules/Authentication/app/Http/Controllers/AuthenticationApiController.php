@@ -3,14 +3,16 @@
 namespace Modules\Authentication\App\Http\Controllers;
 
 use App\Enums\Role;
+use Modules\Users\User\App\Http\Requests\UserStoreRequest;
 use Modules\Users\User\App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\UserRoleRequest;
-use App\Http\Requests\UserStoreRequest;
 use Modules\Authentication\Services\AuthenticationApiServiceInterface;
 use Modules\Shared\Email\EmailServiceInterface;
+use Modules\Users\User\App\Http\Requests\UserRoleRequest;
+use Modules\Users\User\App\Http\Resources\UserApiResource;
 use Modules\Users\User\Services\UserApiServiceInterface;
 
 class AuthenticationApiController extends Controller
@@ -30,27 +32,33 @@ class AuthenticationApiController extends Controller
     public function register(UserStoreRequest $request)
     {
         $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
-        $user = User::create($data);
+        $user = $this->userApiService->create($data, $data['role']);
         if (!$user) {
             return response()->json(['users' => $user, 'error_message' => 'Please fill the data correctly']);
         }
         $token = $user->createToken('auth_token')->plainTextToken;
-        return response()->json(['users' => $user, 'tokens' => $token, 'message' => 'Register Successfully']);
+        $data = ['user' => new UserApiResource($user), 'token' => $token];
+        return apiResponse(true, "User registered successfully.", $data);
     }
 
     // // Users login section
     public function login(UserRoleRequest $request)
     {
+        $data = $request->validated();
         $user = $this->userApiService->get(conds: ['email' => $request->email]);
+        $role = Role::tryFrom($request->role);
+
         if (!$user->email_verified_at) {
             return response()->json(['message' => "Need to verify first!"]);
         }
-        if (! $user || $request->role !== $user->role || ! Hash::check($request->password, $user->password)) {
+        if (!Auth::attempt($request->only('email', 'password')) || !$user->hasRole($role->label())) {
             return response()->json(["message" => "Invalid Credentials"]);
         }
+
         $token = $user->createToken('auth_token')->plainTextToken;
-        return response()->json(['token' => $token, 'user' => $user]);
+        $data = ['user' => new UserApiResource($user), 'token' => $token];
+
+        return apiResponse(true, "Login success.", $data);
     }
 
     public function verifyEmail($id)
@@ -69,14 +77,13 @@ class AuthenticationApiController extends Controller
         $email = $user->email;
         $this->emailService->send('mail', $email, 'Email Verification', ['userId' => $user->id]);
 
-        return response()->json(['status'  => 'success', 'message' => 'Verification email sent successfully']);
+        return apiResponse(true, 'Verification email sent successfully');
     }
 
     // Verify btn from mail and then route to confirmation page
     public function verificationPage($id)
     {
         $user = $this->userApiService->get($id);
-        //  return view('verificationPage', ['userId' => $user->id]);
         return response()->json(['userId' => $user->id]);
     }
 

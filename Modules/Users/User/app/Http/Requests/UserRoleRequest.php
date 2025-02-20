@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace Modules\Users\User\App\Http\Requests;
 
+use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UserStoreRequest extends FormRequest
+class UserRoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +24,9 @@ class UserStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'     => 'required|string',
-            'email'    => 'required|email|unique:users',
-            'password' => 'required|min:6',
-            'role'     => 'required|in:marketing_manager,marketing_coordinator,admin,student,guest',
+            'email'    => 'required|email',
+            'password' => 'required',
+            'role' => ['required', Rule::in(Role::values())],
         ];
     }
 }

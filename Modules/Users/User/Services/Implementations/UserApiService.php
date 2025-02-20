@@ -3,8 +3,11 @@
 namespace Modules\Users\User\Services\Implementations;
 
 use App\Config\Cache\UserCache;
+use App\Enums\Role;
 use App\Facades\Cache;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Modules\Users\User\App\Models\User;
 use Modules\Users\User\Services\UserApiServiceInterface;
 
@@ -56,9 +59,22 @@ class UserApiService implements UserApiServiceInterface
         });
     }
 
-    public function create()
+    public function create($userData, $role)
     {
         //write db connection
+        DB::beginTransaction();
+        try {
+            $user = $this->createUser($userData);
+            $this->assignRole($user,$role);
+
+            DB::commit();
+            Cache::clear(UserCache::GET_ALL_KEY);
+
+            return $user;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     public function update()
@@ -78,6 +94,15 @@ class UserApiService implements UserApiServiceInterface
     //-------------------------------------------------------------------
     // Database
     //-------------------------------------------------------------------
+    private function createUser($userData)
+    {
+        $user = new User();
+        $user->fill($userData);
+        $user->save();
+
+        return $user;
+    }
+
     private function searching(Builder $query, $conds)
     {
         $query
@@ -91,5 +116,19 @@ class UserApiService implements UserApiServiceInterface
             });
 
         return $query;
+    }
+
+    //-------------------------------------------------------------------
+    // Others
+    //-------------------------------------------------------------------
+    private function assignRole(User $user, $role)
+    {
+        $role = Role::tryFrom($role);
+
+        if ($role) {
+            $user->assignRole($role->label());
+        } else {
+            throw new Exception('Invalid Role');
+        }
     }
 }

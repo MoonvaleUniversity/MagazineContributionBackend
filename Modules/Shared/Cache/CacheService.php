@@ -19,6 +19,11 @@ class CacheService implements CacheServiceInterface
         }
     }
 
+    public function clear($key)
+    {
+        return Cache::forget($key);
+    }
+
     ///////////////////////////////////////////////////////////////////
     /// Private Functions
     ///////////////////////////////////////////////////////////////////
