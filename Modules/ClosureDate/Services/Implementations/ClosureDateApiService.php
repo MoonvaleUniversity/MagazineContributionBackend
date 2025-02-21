@@ -2,32 +2,39 @@
 
 namespace Modules\ClosureDate\Services\Implementations;
 
+use Modules\ClosureDate\App\Models\ClosureDate;
 use Modules\ClosureDate\Services\ClosureDateApiServiceInterface;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class ClosureDateApiService implements ClosureDateApiServiceInterface
 {
-    public function get()
+    public function getById($id)
     {
-        //read db connection
+        return ClosureDate::find($id);
     }
 
     public function getAll()
     {
-        //read db connection
+        return ClosureDate::all();
     }
 
-    public function save()
+    public function create($data)
     {
-        //write db connection
+        $data['created_by'] = Auth::id();
+        return ClosureDate::create($data);
     }
 
-    public function update()
+    public function update($id, $data)
     {
-        //write db connection
+        $closureDate = ClosureDate::findOrFail($id);
+        $data['updated_by'] = Auth::id();
+        $closureDate->update($data);
+        return $closureDate;
     }
 
-    public function delete()
+    public function delete($id)
     {
-        //write db connection
+        return ClosureDate::destroy($id) > 0;
     }
 }

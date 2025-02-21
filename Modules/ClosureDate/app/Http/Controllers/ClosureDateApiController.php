@@ -2,51 +2,57 @@
 
 namespace Modules\ClosureDate\App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Modules\ClosureDate\App\Http\Requests\ClosureApiRequest;
+use Modules\ClosureDate\App\Http\Resources\ClosureResourceApi;
 use Modules\ClosureDate\Services\ClosureDateApiServiceInterface;
 
 class ClosureDateApiController extends Controller
 {
-    public function __construct(protected ClosureDateApiServiceInterface $closureDateApiService) {}
+    protected ClosureDateApiServiceInterface $closureDateService;
 
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct(ClosureDateApiServiceInterface $closureDateService)
+    {
+        $this->closureDateService = $closureDateService;
+    }
+
     public function index()
     {
-        //
+        $closure_data = $this->closureDateService->getAll();
+        $data = ClosureResourceApi::collection($closure_data);
+        return response()->json(["closure_data"=>$data]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(ClosureApiRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $closureDate = $this->closureDateService->create($validated);
+        return response()->json(["closure_date"=>$closureDate], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $closureDate = $this->closureDateService->getById($id);
+        return $closureDate ? response()->json($closureDate) : response()->json(['message' => 'Not Found'], 404);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(ClosureApiRequest $request, $id)
     {
-        //
+        $validated = $request->validated();
+        try{
+            $closureDate = $this->closureDateService->update($id, $validated);
+            return response()->json([$closureDate,"success"=>"update successfully"]);
+        }catch(\Exception $e){
+            return response()->json(["message"=>"Undefined academic id"]);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $deleted = $this->closureDateService->delete($id);
+        return $deleted ? response()->json(['message' => 'Deleted']) : response()->json(['message' => 'Not Found'], 404);
     }
 }
+

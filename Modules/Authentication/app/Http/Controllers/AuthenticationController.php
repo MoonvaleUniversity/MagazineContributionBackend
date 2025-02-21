@@ -11,9 +11,6 @@ use Modules\Authentication\App\Http\Requests\UserStoreRequest;
 use Modules\Authentication\Services\AuthenticationApiServiceInterface;
 use Modules\Authentication\App\Http\Resources\UserResourceApi;
 
-
-
-
 class AuthenticationController extends Controller
 {
     public function __construct(protected AuthenticationApiServiceInterface $authenticationApiService) {}
@@ -47,9 +44,9 @@ class AuthenticationController extends Controller
     public function login(UserRoleRequest $request)
     {
         $user = User::where('email', $request->email)->first();
-        // if($user->is_email_verify != true){
-        //     return response()->json(['message' => "Need to verify first!"]);
-        // }
+        if($user->is_email_verify != true){
+            return response()->json(['message' => "Need to verify first!"]);
+        }
         if (! $user || $request->role !== $user->role || ! Hash::check($request->password, $user->password)) {
             return response()->json(["message" => "Invalid Credentials"]);
         }

@@ -16,6 +16,7 @@ class UserResourceApi extends JsonResource
      public function toArray(Request $request): array
     {
         return [
+            "id"=>$this->id,
             "username"=>$this->name,
             "academic_year_id"=>$this->academic_year_id,
             "faculty_id"=>$this->faculty_id,
