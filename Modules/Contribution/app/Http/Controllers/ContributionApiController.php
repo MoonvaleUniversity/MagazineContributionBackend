@@ -2,8 +2,11 @@
 
 namespace Modules\Contribution\App\Http\Controllers;
 
+use Exception;
+use Mockery\Expectation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Modules\ClosureDate\App\Models\ClosureDate;
 use Modules\Contribution\App\Models\Contribution;
 use Modules\Contribution\App\Models\ContributionImage;
 use Modules\Users\User\Services\UserApiServiceInterface;
@@ -19,7 +22,8 @@ class ContributionApiController extends Controller
      */
     public function index()
     {
-        //
+       $con = Contribution::all();
+       return response()->json(['contribution' => $con]);
     }
 
     /**
@@ -29,6 +33,7 @@ class ContributionApiController extends Controller
     {
 
         $user = $this->userApiService->get($id);
+        $closure_date= ClosureDate::findOrFail($id);
 
         $request->validate([
             'name'  => 'required',
@@ -40,9 +45,9 @@ class ContributionApiController extends Controller
         $wordPath = 'upload/doc/';
         $wordFile = $request->file('doc_url');
 
-        if ($wordFile) {
+        try{
             $wordFilePath = $this->fileUploadService->singleUpload($wordPath, $wordFile);
-        } else {
+        } catch(\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Word file is required'], 400);
         }
 
@@ -50,6 +55,7 @@ class ContributionApiController extends Controller
             'user_id' => $user->id,
             'name' => $request->name,
             'doc_url' => $wordFilePath,
+            'closure_date_id' => $closure_date->id,
             'created_by' => $user->id,
         ]);
 
@@ -65,7 +71,7 @@ class ContributionApiController extends Controller
             }
         }
 
-        return response()->json(['status' => 'success', 'message' => 'Contribution stored successfully']);
+        return response()->json(['status' => 'success', 'message' => 'Contribution stored successfully'],300);
     }
 
     /**

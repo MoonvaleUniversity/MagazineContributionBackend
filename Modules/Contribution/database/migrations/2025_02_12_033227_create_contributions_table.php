@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('user_id')->constrained(User::table);
-            $table->foreignId('closure_date_id')->constrained(ClosureDate::table);
+            $table->foreignId('closure_date_id')->nullable()->constrained(ClosureDate::table);
             $table->string('doc_url');
             $table->boolean('is_selected_for_publication')->default(false);
             $table->integer('version')->default(1);
