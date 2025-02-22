@@ -28,5 +28,6 @@ class AuthenticationServiceProvider extends ServiceProvider
             ->group(function () {
                 require __DIR__ . '/../../routes/api_v1.0.php';
             });
+        $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
     }
 }

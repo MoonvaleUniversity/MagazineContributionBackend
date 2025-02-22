@@ -26,7 +26,6 @@ class LoginApiRequest extends FormRequest
         return [
             'email'    => 'required|email',
             'password' => 'required',
-            'role' => ['required', Rule::in(Role::values())],
         ];
     }
 }

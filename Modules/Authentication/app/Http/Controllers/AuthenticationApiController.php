@@ -26,23 +26,19 @@ class AuthenticationApiController extends Controller
     }
 
     // Admin will create users according to their suitable role
-    public function register()
-    {
-
-    }
+    public function register() {}
 
     // // Users login section
     public function login(LoginApiRequest $request)
     {
         $data = $request->validated();
         $user = $this->userApiService->get(conds: ['email' => $request->email]);
-        $role = Role::tryFrom($request->role);
 
         if (!$user->email_verified_at) {
-            return response()->json(['message' => "Need to verify first!"]);
+            return apiResponse(false, 'You need to verify your email first.', statusCode: 401, errors: ['email' => ['You need to verify your email first.']]);
         }
-        if (!Auth::attempt($request->only('email', 'password')) || !$user->hasRole($role->label())) {
-            return response()->json(["message" => "Invalid Credentials"]);
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return apiResponse(false, 'Invaliad Credentials.', statusCode: 401, errors: ['credentials' => ['The credentials you provided is incorrect.']]);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -57,14 +53,13 @@ class AuthenticationApiController extends Controller
     }
 
     // Mail sent for Verification
-    public function verifyPost($id)
+    public function verifyPost($email)
     {
-        $user = $this->userApiService->get($id);
+        $user = $this->userApiService->get(conds: ['email' => $email]);
         if (!$user) {
             return response()->json(['status'  => 'error', 'message' => 'User not found'], 404);
         }
 
-        $email = $user->email;
         $this->emailService->send('mail', $email, 'Email Verification', ['userId' => $user->id]);
 
         return apiResponse(true, 'Verification email sent successfully');
@@ -74,7 +69,9 @@ class AuthenticationApiController extends Controller
     public function verificationPage($id)
     {
         $user = $this->userApiService->get($id);
-        return response()->json(['userId' => $user->id]);
+        $this->userApiService->update($id, ['email_verified_at' => now()]);
+
+        return view('email-verified');
     }
 
     // Verify status change page
