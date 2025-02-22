@@ -3,15 +3,12 @@
 namespace Modules\Authentication\App\Http\Controllers;
 
 use App\Enums\Role;
-use Modules\Users\User\App\Http\Requests\UserStoreRequest;
-use Modules\Users\User\App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Modules\Authentication\Services\AuthenticationApiServiceInterface;
 use Modules\Shared\Email\EmailServiceInterface;
-use Modules\Users\User\App\Http\Requests\UserRoleRequest;
+use Modules\Users\User\App\Http\Requests\LoginApiRequest;
 use Modules\Users\User\App\Http\Resources\UserApiResource;
 use Modules\Users\User\Services\UserApiServiceInterface;
 
@@ -29,20 +26,13 @@ class AuthenticationApiController extends Controller
     }
 
     // Admin will create users according to their suitable role
-    public function register(UserStoreRequest $request)
+    public function register()
     {
-        $data = $request->validated();
-        $user = $this->userApiService->create($data, $data['role']);
-        if (!$user) {
-            return response()->json(['users' => $user, 'error_message' => 'Please fill the data correctly']);
-        }
-        $token = $user->createToken('auth_token')->plainTextToken;
-        $data = ['user' => new UserApiResource($user), 'token' => $token];
-        return apiResponse(true, "User registered successfully.", $data);
+
     }
 
     // // Users login section
-    public function login(UserRoleRequest $request)
+    public function login(LoginApiRequest $request)
     {
         $data = $request->validated();
         $user = $this->userApiService->get(conds: ['email' => $request->email]);

@@ -59,16 +59,16 @@ class UserApiService implements UserApiServiceInterface
         });
     }
 
-    public function create($userData, $role)
+    public function create($userData)
     {
         //write db connection
         DB::beginTransaction();
         try {
             $user = $this->createUser($userData);
-            $this->assignRole($user,$role);
+            $this->assignRole($user, $userData['role']);
 
             DB::commit();
-            Cache::clear(UserCache::GET_ALL_KEY);
+            Cache::clear([UserCache::GET_ALL_KEY, UserCache::GET_KEY]);
 
             return $user;
         } catch (\Throwable $e) {
@@ -77,14 +77,40 @@ class UserApiService implements UserApiServiceInterface
         }
     }
 
-    public function update()
+    public function update($id, $userData)
     {
         //write db connection
+        DB::beginTransaction();
+        try {
+            $user = $this->get($id);
+            $user->fill($userData);
+            $user->save();
+
+            DB::commit();
+            Cache::clear([UserCache::GET_ALL_KEY, UserCache::GET_KEY]);
+
+            return $user;
+        } catch(\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
-    public function delete()
+    public function delete($id)
     {
         //write db connection
+        DB::beginTransaction();
+        try {
+            $user = $this->get($id);
+            $user->delete();
+
+            DB::commit();
+            Cache::clear([UserCache::GET_ALL_KEY, UserCache::GET_KEY]);
+
+            return $user;
+        } catch(\Throwable $e) {
+            DB::rollBack();
+        }
     }
 
     ////////////////////////////////////////////////////////////////////

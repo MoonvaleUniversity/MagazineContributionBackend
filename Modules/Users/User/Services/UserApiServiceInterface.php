@@ -4,6 +4,7 @@ namespace Modules\Users\User\Services;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Modules\Users\User\App\Models\User;
 
 interface UserApiServiceInterface
 {
@@ -34,9 +35,16 @@ interface UserApiServiceInterface
      */
     public function getAll($relations = null, $limit = null, $offset = null, $noPagination = null, $pagPerPage = null, $conds = null);
 
-    public function create($userData, $role);
+    /**
+     * Create a new user.
+     * @param array $userData
+     * @param string $role
+     * @return User|null
+     */
+    public function create($userData);
 
-    public function update();
 
-    public function delete();
+    public function update($id, $userData);
+
+    public function delete($id);
 }

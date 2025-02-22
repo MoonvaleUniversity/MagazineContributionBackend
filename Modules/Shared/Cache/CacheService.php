@@ -2,6 +2,7 @@
 
 namespace Modules\Shared\Cache;
 
+use App\Models\Cache as ModelCache;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -11,7 +12,7 @@ class CacheService implements CacheServiceInterface
     public function remember($baseKey, $expiry, $param, $callback)
     {
         try {
-            $key = $this->getCacheKey($baseKey, $param);
+            $key = $baseKey . '_' . $this->getCacheKey($baseKey, $param);
 
             return Cache::remember($key, $expiry, $callback);
         } catch (\Throwable $e) {
@@ -19,9 +20,13 @@ class CacheService implements CacheServiceInterface
         }
     }
 
-    public function clear($key)
+    public function clear($keys)
     {
-        return Cache::forget($key);
+        return ModelCache::where(function ($query) use ($keys) {
+            foreach ($keys as $key) {
+                $query->orWhere(ModelCache::key, 'like', '%' . $key . '%');
+            }
+        })->delete();
     }
 
     ///////////////////////////////////////////////////////////////////

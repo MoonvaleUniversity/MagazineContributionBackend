@@ -5,5 +5,5 @@ namespace Modules\Shared\Cache;
 interface CacheServiceInterface {
     public function remember($baseKey, $expiry, $param, $callback);
 
-    public function clear($key);
+    public function clear($keys);
 }
