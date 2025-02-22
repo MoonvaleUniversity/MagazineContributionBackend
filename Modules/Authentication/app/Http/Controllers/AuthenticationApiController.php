@@ -6,9 +6,9 @@ use App\Enums\Role;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Modules\Authentication\App\Http\Requests\LoginApiRequest;
 use Modules\Authentication\Services\AuthenticationApiServiceInterface;
 use Modules\Shared\Email\EmailServiceInterface;
-use Modules\Users\User\App\Http\Requests\LoginApiRequest;
 use Modules\Users\User\App\Http\Resources\UserApiResource;
 use Modules\Users\User\Services\UserApiServiceInterface;
 
