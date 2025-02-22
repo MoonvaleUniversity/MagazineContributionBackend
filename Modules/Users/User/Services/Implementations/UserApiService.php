@@ -110,6 +110,7 @@ class UserApiService implements UserApiServiceInterface
             return $user;
         } catch(\Throwable $e) {
             DB::rollBack();
+            throw $e;
         }
     }
 
