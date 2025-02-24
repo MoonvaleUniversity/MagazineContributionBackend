@@ -40,7 +40,7 @@ class FileUploadService implements FileUploadServiceInterface
         // ** Need to check if the file already exist depending on the disk (to be added)**
 
         // Store the file using Laravel's Storage facade
-        $storedFilePath = Storage::disk($this->disk)->put($fullFilePath, file_get_contents($file));
+        $storedFilePath = Storage::disk($this->disk)->put($fullFilePath, file_get_contents(filename: $file));
 
         if (!$storedFilePath) {
             throw new \RuntimeException('Failed to upload file to storage.');
