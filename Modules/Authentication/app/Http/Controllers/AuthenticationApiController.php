@@ -6,6 +6,7 @@ use App\Enums\Role;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Modules\Authentication\App\Http\Requests\LoginApiRequest;
 use Modules\Authentication\Services\AuthenticationApiServiceInterface;
 use Modules\Shared\Email\EmailServiceInterface;
@@ -59,8 +60,9 @@ class AuthenticationApiController extends Controller
         if (!$user) {
             return response()->json(['status'  => 'error', 'message' => 'User not found'], 404);
         }
+        $signedUrl = URL::temporarySignedRoute('verificationPage', now()->addMinutes(30), ['id' => $user->id]);
 
-        $this->emailService->send('mail', $email, 'Email Verification', ['userId' => $user->id]);
+        $this->emailService->send('mail', $email, 'Email Verification', ['signedUrl' => $signedUrl]);
 
         return apiResponse(true, 'Verification email sent successfully');
     }

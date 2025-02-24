@@ -19,7 +19,7 @@ align-items: center;
 padding: 20px;
 text-align: center;
 ">
-<form class="verification-container" action="{{ route('verificationPage',['id' => $userId]) }}" method="get" style="
+<div class="verification-container" style="
     margin: auto;
     max-width: 80%;
     padding: 30px;
@@ -29,11 +29,10 @@ text-align: center;
     text-align: center;
     width: 100%;
 ">
-    @csrf
     <h2 class="mb-3 text-dark">Verify Your Account</h2>
     <p class="text-muted">Please verify your account to continue.</p>
 
-    <button type="submit" class="w-100 mt-3" style="
+    <a href="{{$signedUrl}}" class="w-100 mt-3" style="
         background: black;
         border: none;
         color: white;
@@ -43,10 +42,11 @@ text-align: center;
         font-weight: bold;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         cursor: pointer;
+        text-
     ">
         Verify
-    </button>
-</form>
+    </a>
+</div>
 </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
