@@ -5,13 +5,9 @@ namespace Modules\ClosureDate\Services;
 interface ClosureDateApiServiceInterface
 {
 
-    public function get();
-
+    public function get($id);
     public function getAll();
-
-    public function save();
-
-    public function update();
-
-    public function delete();
+    public function create($data);
+    public function update( $id, $data);
+    public function delete( $id);
 }
