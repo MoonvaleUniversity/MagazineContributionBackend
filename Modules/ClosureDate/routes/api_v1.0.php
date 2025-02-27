@@ -9,3 +9,4 @@ Route::get('/show_closure/{id}', [ClosureDateApiController::class, 'show']);
 Route::post('/post_closure', [ClosureDateApiController::class, 'store']);
 Route::put('/update_closure/{id}', [ClosureDateApiController::class, 'update']);
 Route::delete('/delete_closure/{id}', [ClosureDateApiController::class, 'destroy']);
+Route::post('/lock_closure/{id}', [ClosureDateApiController::class, 'lock']);
