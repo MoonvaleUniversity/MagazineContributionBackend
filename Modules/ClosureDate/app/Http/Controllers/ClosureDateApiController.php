@@ -2,13 +2,16 @@
 
 namespace Modules\ClosureDate\App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use function Laravel\Prompts\error;
+use App\Http\Controllers\Controller;
+use Modules\ClosureDate\App\Models\ClosureDate;
+
+use Modules\Contribution\App\Models\Contribution;
 use Modules\ClosureDate\App\Http\Requests\ClosureApiRequest;
 use Modules\ClosureDate\App\Http\Resources\ClosureResourceApi;
 use Modules\ClosureDate\Services\ClosureDateApiServiceInterface;
-
-use function Laravel\Prompts\error;
 
 class ClosureDateApiController extends Controller
 {
@@ -76,5 +79,20 @@ class ClosureDateApiController extends Controller
     {
         $deleted = $this->closureDateApiService->delete($id);
         return $deleted ? apiResponse(true,"Successfully Deleted") : apiResponse(false,errors:["404 Not Found"],statusCode:404);
+    }
+
+     public function lock($id)
+    {
+        $contribution= Contribution::findOrFail($id);
+
+        $closureDate = ClosureDate::where('id', $contribution->closure_date_id)
+        ->orderBy('final_closure_date', 'desc')
+        ->first();
+
+        if ($closureDate && Carbon::now()->greaterThan($closureDate->final_closure_date)) {
+            return apiResponse(false,'Submissions are closed because deadline has passed.',statusCode:403);
+        }else{
+            return apiResponse(true);
+        }
     }
 }
