@@ -5,6 +5,7 @@ namespace Modules\AcademicYear\App\Models;
 use Modules\Users\User\App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Modules\ClosureDate\App\Models\ClosureDate;
+use App\Enums\Role;
 
 class AcademicYear extends Model
 {
@@ -21,7 +22,10 @@ class AcademicYear extends Model
 
     public function students()
     {
-        return $this->hasMany(User::class, User::academic_year_id, self::id);
+        return $this->hasMany(User::class, User::academic_year_id, self::id)
+            ->whereHas('roles', function ($q) {
+                $q->where('name', Role::STUDENT->label());
+            });
     }
 
     public function closure_dates()

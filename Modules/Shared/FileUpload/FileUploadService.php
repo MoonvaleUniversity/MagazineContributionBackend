@@ -37,6 +37,11 @@ class FileUploadService implements FileUploadServiceInterface
         if (isset($options['add_unix_time']) && $options['add_unix_time']) $name = now()->unix() . "_" . $name;
         $fullFilePath = rtrim($path, '/') . '/' . $name;
 
+        // Ensure the directory exists (create if necessary)
+        if (!Storage::disk($this->disk)->exists($path)) {
+            Storage::disk($this->disk)->makeDirectory($path);
+        }
+
         // ** Need to check if the file already exist depending on the disk (to be added)**
 
         // Store the file using Laravel's Storage facade

@@ -1,0 +1,31 @@
+<?php
+
+namespace Modules\ClosureDate\App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreClosureDateApiRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'closure_date' => 'required|date',
+            'final_closure_date' => 'required|date|after_or_equal:closure_date',
+            'academic_year_id' => 'required|exists:academic_years,id',
+            'version' => 'integer',
+        ];
+    }
+}

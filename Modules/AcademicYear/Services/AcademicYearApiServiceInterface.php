@@ -3,13 +3,13 @@
 namespace Modules\AcademicYear\Services;
 
 interface AcademicYearApiServiceInterface {
-    public function get();
+    public function get($id = null, $relations = null, $conds = null);
 
-    public function getAll();
+    public function getAll($relations = null, $limit = null, $offset = null, $noPagination = null, $pagPerPage = null, $conds = null);
 
-    public function save();
+    public function create($academicYearData);
 
-    public function update();
+    public function update($id, $academicYearData);
 
-    public function delete();
+    public function delete($id);
 }

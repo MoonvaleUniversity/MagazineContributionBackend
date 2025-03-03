@@ -13,12 +13,12 @@ use Modules\Users\User\Services\UserApiServiceInterface;
 
 class UserApiService implements UserApiServiceInterface
 {
-    public function get($id = null, $relations = null, array $conds = null)
+    public function get($id = null, $relations = null, $conds = null)
     {
         //read db connection
         $readConnection = config('constants.database.read');
-        $param = [$id, $relations, $conds];
-        return Cache::remember(UserCache::GET_KEY, UserCache::GET_EXPIRY, $param, function () use ($id, $relations, $conds, $readConnection) {
+        $params = [$id, $relations, $conds];
+        return Cache::remember(UserCache::GET_KEY, UserCache::GET_EXPIRY, $params, function () use ($id, $relations, $conds, $readConnection) {
             return User::on($readConnection)
                 ->when($id, function ($q, $id) {
                     $q->where(User::id, $id);
@@ -37,8 +37,8 @@ class UserApiService implements UserApiServiceInterface
     {
         //read db connection
         $readConnection = config('constants.database.read');
-        $param = [$relations, $limit, $offset, $noPagination, $pagPerPage, $conds];
-        return Cache::remember(UserCache::GET_ALL_KEY, UserCache::GET_ALL_EXPIRY, $param, function () use ($relations, $limit, $offset, $noPagination, $pagPerPage, $readConnection, $conds) {
+        $params = [$relations, $limit, $offset, $noPagination, $pagPerPage, $conds];
+        return Cache::remember(UserCache::GET_ALL_KEY, UserCache::GET_ALL_EXPIRY, $params, function () use ($relations, $limit, $offset, $noPagination, $pagPerPage, $readConnection, $conds) {
             $users = User::on($readConnection)
                 ->when($relations, function ($q, $relations) {
                     $q->with($relations);

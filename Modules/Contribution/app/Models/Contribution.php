@@ -4,6 +4,7 @@ namespace Modules\Contribution\App\Models;
 
 use Modules\Users\User\App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Modules\ClosureDate\App\Models\ClosureDate;
 
 class Contribution extends Model
 {
@@ -24,21 +25,31 @@ class Contribution extends Model
 
     public function images()
     {
-        return $this->hasMany(ContributionImage::class,ContributionImage::contribution_id,self::id);
+        return $this->hasMany(ContributionImage::class, ContributionImage::contribution_id, self::id);
     }
 
     public function user_comments()
     {
-        return $this->belongsToMany(User::class,'comments','contribution_id','user_id');
+        return $this->belongsToMany(User::class, 'comments', 'contribution_id', self::user_id);
     }
 
     public function user_votes()
     {
-        return $this->belongsToMany(User::class, 'votes', 'contribution_id','user_id')->withPivotValue(['type']);
+        return $this->belongsToMany(User::class, 'votes', 'contribution_id', 'user_id')->withPivotValue(['type']);
     }
 
     public function saved_users()
     {
         return $this->belongsToMany(User::class, 'saved_contributions', 'contribution_id', 'user_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, self::user_id);
+    }
+
+    public function closure_date()
+    {
+        return $this->belongsTo(ClosureDate::class, self::closure_date_id);
     }
 }

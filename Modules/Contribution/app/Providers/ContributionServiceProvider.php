@@ -28,5 +28,6 @@ class ContributionServiceProvider extends ServiceProvider
             ->group(function () {
                 require __DIR__ . '/../../routes/api_v1.0.php';
             });
+        $this->mergeConfigFrom(__DIR__ . "/../../config/config.php", 'contribution');
     }
 }

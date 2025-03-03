@@ -2,23 +2,19 @@
 
 namespace Modules\Users\User\Services;
 
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Modules\Users\User\App\Models\User;
-
 interface UserApiServiceInterface
 {
     /**
-     * Retrieves a list of users with optional filtering, relations, and pagination.
+     * Retrieves a user with optional filtering, relations, and pagination.
      *
      * @param string|integer  $id        Filter users by id.
      * @param string|array  $relations   Related models to include.
      * @param array         $conds       Additional search conditions:
      *                                   - 'role' (string): Filter users by role.
      *                                   - 'email' (string): Filter users by email.
-     * @return LengthAwarePaginator|Collection
+     * @return \Modules\Users\User\App\Models\User
      */
-    public function get($id = null, $relations = null, array $conds = null);
+    public function get($id = null, $relations = null, $conds = null);
 
     /**
      * Retrieves a list of users with optional filtering, relations, and pagination.
@@ -31,18 +27,16 @@ interface UserApiServiceInterface
      * @param array         $conds       Additional search conditions:
      *                                   - 'role' (string): Filter users by role.
      *                                   - 'email' (string): Filter users by email.
-     * @return LengthAwarePaginator|Collection
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Database\Eloquent\Collection
      */
     public function getAll($relations = null, $limit = null, $offset = null, $noPagination = null, $pagPerPage = null, $conds = null);
 
     /**
      * Create a new user.
      * @param array $userData
-     * @param string $role
-     * @return User|null
+     * @return \Modules\Users\User\App\Models\User|null
      */
     public function create($userData);
-
 
     public function update($id, $userData);
 
