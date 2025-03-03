@@ -42,9 +42,9 @@ class StoreContributionApiRequest extends FormRequest
     {
         return [
             'name'  => 'required',
-            // 'doc' => 'required|mimes:doc,docx',
-            // 'images' => 'required|array',
-            // 'images.*' => 'required|image|mimes:jpeg,png,jpg',
+            'doc' => 'required|mimes:doc,docx',
+            'images' => 'required|array',
+            'images.*' => 'required|image|mimes:jpeg,png,jpg',
             'closure_date_id' => 'required|exists:closure_dates,id',
             'user_id' => 'required|exists:users,id'
         ];
