@@ -51,6 +51,8 @@ class ClosureDateApiService implements ClosureDateApiServiceInterface
                     $q->offset($offset);
                 });
 
+            $closureDates = (!$noPagination || $pagPerPage) ? $closureDates->paginate($pagPerPage) : $closureDates->get();
+
             return $closureDates;
         });
     }

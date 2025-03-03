@@ -2,13 +2,8 @@
 
 namespace Modules\ClosureDate\App\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\ClosureDate\App\Models\ClosureDate;
-
-use Modules\Contribution\App\Models\Contribution;
-use Modules\ClosureDate\App\Http\Requests\ClosureApiRequest;
 use Modules\ClosureDate\App\Http\Requests\StoreClosureDateApiRequest;
 use Modules\ClosureDate\App\Http\Requests\UpdateClosureDateApiRequest;
 use Modules\ClosureDate\App\Http\Resources\ClosureResourceApi;
