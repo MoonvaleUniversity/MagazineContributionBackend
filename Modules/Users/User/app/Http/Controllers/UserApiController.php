@@ -23,12 +23,12 @@ class UserApiController extends Controller
         [$limit, $offset] = getLimitOffsetFromRequest($request);
         [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
         $conds = $this->getFilterConditions($request);
-        
+
         $users = $this->userApiService->getAll($this->userApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
         $data = [
             'users' => boolval($noPagination) ? UserApiResource::collection($users) : $users
         ];
-        return apiResponse(true, 'Data retrived successfully', $users);
+        return apiResponse(true, 'Data retrived successfully', $data);
     }
 
     /**
