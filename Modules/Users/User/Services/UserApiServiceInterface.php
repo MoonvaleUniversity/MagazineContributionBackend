@@ -12,6 +12,8 @@ interface UserApiServiceInterface
      * @param array         $conds       Additional search conditions:
      *                                   - 'role' (string): Filter users by role.
      *                                   - 'email' (string): Filter users by email.
+     *                                   - 'academic_year_id' (string): Filter users by academic year id.
+     *                                   - 'faculty_id' (string): Filter users by faculty id.
      * @return \Modules\Users\User\App\Models\User
      */
     public function get($id = null, $relations = null, $conds = null);
@@ -27,6 +29,8 @@ interface UserApiServiceInterface
      * @param array         $conds       Additional search conditions:
      *                                   - 'role' (string): Filter users by role.
      *                                   - 'email' (string): Filter users by email.
+     *                                   - 'academic_year_id' (string): Filter users by academic year id.
+     *                                   - 'faculty_id' (string): Filter users by faculty id.
      * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Database\Eloquent\Collection
      */
     public function getAll($relations = null, $limit = null, $offset = null, $noPagination = null, $pagPerPage = null, $conds = null);

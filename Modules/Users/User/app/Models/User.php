@@ -18,6 +18,8 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens, HasRoles;
 
+    protected $appends = ['role'];
+
     const table = 'users';
     const id = 'id';
     const name = 'name';
@@ -43,7 +45,6 @@ class User extends Authenticatable
         'password',
         'is_suspended',
         'confirm_password',
-        'role',
         'email_verified_at',
         'version',
         'created_by',
@@ -106,5 +107,10 @@ class User extends Authenticatable
     public function contributions()
     {
         return $this->hasMany(Contribution::class, Contribution::user_id);
+    }
+
+    public function getRoleAttribute()
+    {
+        return $this->getRoleNames()->first();
     }
 }

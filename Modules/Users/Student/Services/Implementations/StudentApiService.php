@@ -16,7 +16,7 @@ class StudentApiService implements StudentApiServiceInterface
         //read db connection
     }
 
-    public function save()
+    public function create()
     {
         //write db connection
     }

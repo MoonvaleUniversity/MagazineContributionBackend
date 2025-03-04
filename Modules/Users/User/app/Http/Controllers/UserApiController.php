@@ -11,18 +11,24 @@ use Modules\Users\User\Services\UserApiServiceInterface;
 
 class UserApiController extends Controller
 {
+    protected $userApiRelations;
+
     public function __construct(protected UserApiServiceInterface $userApiService) {}
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = $this->userApiService->getAll();
+        [$limit, $offset] = getLimitOffsetFromRequest($request);
+        [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
+        $conds = $this->getFilterConditions($request);
+        
+        $users = $this->userApiService->getAll($this->userApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
         $data = [
-            'users' => UserApiResource::collection($users)
+            'users' => boolval($noPagination) ? UserApiResource::collection($users) : $users
         ];
-        return apiResponse(true, 'Data retrived successfully', $data);
+        return apiResponse(true, 'Data retrived successfully', $users);
     }
 
     /**
@@ -72,5 +78,22 @@ class UserApiController extends Controller
             'user' => new UserApiResource($user)
         ];
         return apiResponse(true, 'User deleted successfully', $data);
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    /// Private Functions
+    ////////////////////////////////////////////////////////////////////
+
+    //-------------------------------------------------------------------
+    // Data Preparations
+    //-------------------------------------------------------------------
+    private function getFilterConditions(Request $request)
+    {
+        return [
+            'role' => $request->role,
+            'email' => $request->email,
+            'academic_year_id' => $request->academic_year_id,
+            'faculty_id' => $request->faculty_id
+        ];
     }
 }

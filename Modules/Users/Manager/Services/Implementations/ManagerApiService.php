@@ -16,7 +16,7 @@ class ManagerApiService implements ManagerApiServiceInterface
         //read db connection
     }
 
-    public function save()
+    public function create()
     {
         //write db connection
     }

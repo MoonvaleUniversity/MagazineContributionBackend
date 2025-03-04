@@ -82,15 +82,16 @@ class UserApiService implements UserApiServiceInterface
         //write db connection
         DB::beginTransaction();
         try {
-            $user = $this->get($id);
-            $user->fill($userData);
-            $user->save();
+            $user = $this->updateUser($id, $userData);
+            if ($userData['role']) {
+                $this->updateRole($user, $userData['role']);
+            }
 
             DB::commit();
             Cache::clear([UserCache::GET_ALL_KEY, UserCache::GET_KEY]);
 
             return $user;
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
         }
@@ -101,14 +102,13 @@ class UserApiService implements UserApiServiceInterface
         //write db connection
         DB::beginTransaction();
         try {
-            $user = $this->get($id);
-            $user->delete();
+            $name = $this->deleteUser($id);
 
             DB::commit();
             Cache::clear([UserCache::GET_ALL_KEY, UserCache::GET_KEY]);
 
-            return $user;
-        } catch(\Throwable $e) {
+            return $name;
+        } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
         }
@@ -130,6 +130,24 @@ class UserApiService implements UserApiServiceInterface
         return $user;
     }
 
+    private function updateUser($id, $userData)
+    {
+        $user = $this->get($id);
+        $user->fill($userData);
+        $user->save();
+
+        return $user;
+    }
+
+    private function deleteUser($id)
+    {
+        $user = $this->get($id);
+        $name = $user->name;
+        $user->delete();
+
+        return $name;
+    }
+
     private function searching(Builder $query, $conds)
     {
         $query
@@ -140,6 +158,12 @@ class UserApiService implements UserApiServiceInterface
             })
             ->when(isset($conds['email']), function ($q) use ($conds) {
                 $q->where(User::email, $conds['email']);
+            })
+            ->when(isset($conds['academic_year_id']), function ($q) use ($conds) {
+                $q->where(User::academic_year_id, $conds['academic_year_id']);
+            })
+            ->when(isset($conds['faculty_id']), function ($q) use ($conds) {
+                $q->where(User::faculty_id, $conds['faculty_id']);
             });
 
         return $query;
@@ -150,12 +174,26 @@ class UserApiService implements UserApiServiceInterface
     //-------------------------------------------------------------------
     private function assignRole(User $user, $role)
     {
-        $role = Role::tryFrom($role);
+        $role = $this->checkRole($role);
 
-        if ($role) {
-            $user->assignRole($role->label());
-        } else {
+        $user->assignRole($role->label());
+    }
+
+    private function updateRole(User $user, $role)
+    {
+        $role = $this->checkRole($role);
+
+        $user->roles()->detach();
+
+        $user->assignRole($role->label());
+    }
+
+    private function checkRole($role)
+    {
+        $role = Role::tryFrom($role);
+        if (!$role) {
             throw new Exception('Invalid Role');
         }
+        return $role;
     }
 }

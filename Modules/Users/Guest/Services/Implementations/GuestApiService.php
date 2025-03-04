@@ -16,7 +16,7 @@ class GuestApiService implements GuestApiServiceInterface
         //read db connection
     }
 
-    public function save()
+    public function create()
     {
         //write db connection
     }

@@ -28,6 +28,7 @@ class AuthenticationApiController extends Controller
 
     // Admin will create users according to their suitable role
     public function register(){}
+    
     // // Users login section
     public function login(LoginApiRequest $request)
     {
@@ -37,7 +38,7 @@ class AuthenticationApiController extends Controller
         if (! $user->email_verified_at) {
             return apiResponse(false, 'You need to verify your email first.', statusCode: 401, errors: ['email' => ['You need to verify your email first.']]);
         }
-        if (! Auth::attempt($request->only('email', 'password'))) {
+        if (! Auth::guard('web')->attempt($request->only('email', 'password'))) {
             return apiResponse(false, 'Invaliad Credentials.', statusCode: 401, errors: ['credentials' => ['The credentials you provided is incorrect.']]);
         }
 

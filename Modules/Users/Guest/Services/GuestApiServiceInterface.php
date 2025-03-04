@@ -9,7 +9,7 @@ interface GuestApiServiceInterface
 
     public function getAll();
 
-    public function save();
+    public function create();
 
     public function update();
 
