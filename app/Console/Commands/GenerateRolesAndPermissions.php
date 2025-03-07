@@ -35,7 +35,7 @@ class GenerateRolesAndPermissions extends Command
         $this->enableForeignKeyChecks();
 
         $this->generatePermissions();
-        
+
         $this->generateRoles();
     }
 
@@ -63,15 +63,15 @@ class GenerateRolesAndPermissions extends Command
         $tables = [
             'role_has_permissions',
             'model_has_permissions',
-            'model_has_roles'
+            'model_has_roles',
         ];
 
         foreach ($tables as $table) {
-            DB::table($table)->delete();
+            DB::table($table)->truncate();
         }
 
-        Role::query()->delete();
-        Permission::query()->delete();
+        Role::query()->truncate();
+        Permission::query()->truncate();
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum Role: string
 {
+    case ROOT_ADMIN = 'root_admin';
     case MARKETING_MANAGER = 'marketing_manager';
     case MARKETING_COORDINATOR = 'marketing_coordinator';
     case ADMIN = 'admin';
@@ -16,6 +17,7 @@ enum Role: string
     public function label(): string
     {
         return match ($this) {
+            self::ROOT_ADMIN => 'Root Admin',
             self::MARKETING_MANAGER => 'Marketing Manager',
             self::MARKETING_COORDINATOR => 'Marketing Coordinator',
             self::ADMIN => 'Admin',
