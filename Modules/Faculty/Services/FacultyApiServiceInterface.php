@@ -15,7 +15,7 @@ interface FacultyApiServiceInterface
      *                                   - 'user@@id' (string): Filter faculties by user's id.
      * @return \Modules\Faculty\App\Models\Faculty
      */
-    public function get($id = null, $relations = null, $conds = null);
+        public function get($id = null, $relations = null, $conds = null);
 
     /**
      * Retrieves a list of faculties with optional filtering, relations, and pagination.

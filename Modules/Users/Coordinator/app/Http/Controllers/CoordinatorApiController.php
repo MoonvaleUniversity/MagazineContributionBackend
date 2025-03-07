@@ -3,7 +3,7 @@
 namespace Modules\Users\Coordinator\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CoordinatorApiResource;
+use Modules\Users\Coordinator\App\Http\Resources\CoordinatorApiResource;
 use Illuminate\Http\Request;
 use Modules\Users\Coordinator\App\Http\Requests\StoreCoordinatorApiRequest;
 use Modules\Users\Coordinator\App\Http\Requests\UpdateCoordinatorApiRequest;
