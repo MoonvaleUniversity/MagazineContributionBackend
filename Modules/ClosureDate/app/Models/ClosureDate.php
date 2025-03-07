@@ -3,13 +3,14 @@
 namespace Modules\ClosureDate\App\Models;
 
 use App\Models\Traits\Audit;
+use App\Models\Traits\Version;
 use Illuminate\Database\Eloquent\Model;
 use Modules\AcademicYear\App\Models\AcademicYear;
 use Modules\Contribution\App\Models\Contribution;
 
 class ClosureDate extends Model
 {
-    use Audit;
+    use Audit, Version;
 
     protected $fillable = ['closure_date', 'final_closure_date', 'academic_year_id', 'version', 'created_by', 'updated_by'];
 
