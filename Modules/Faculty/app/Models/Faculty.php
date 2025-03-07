@@ -17,6 +17,7 @@ class Faculty extends Model
     const id = 'id';
     const name = 'name';
     const image_url = 'image_url';
+    const description = 'description';
     const version = 'version';
     const created_by = 'created_by';
     const updated_by = 'updated_by';

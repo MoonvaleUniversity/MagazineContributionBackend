@@ -14,7 +14,7 @@
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
         "predis/predis": "^2.3",
-        "spatie/laravel-permission": "^6.13",
+        "spatie/laravel-permission": "^6.16",
         "stechstudio/laravel-zipstream": "^5.3",
         "symfony/mailer": "^7.2"
     },
