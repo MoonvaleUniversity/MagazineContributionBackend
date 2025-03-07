@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Traits\Version;
+namespace App\Models\Traits;
 
 trait Version
 {
@@ -9,7 +9,7 @@ trait Version
         static::creating(function ($model) {
             $model->version = 1;
         });
-        
+
         static::updating(function ($model) {
             $model->version++;
         });

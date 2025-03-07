@@ -6,15 +6,12 @@ use Exception;
 use Mockery\Expectation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Modules\ClosureDate\Services\ClosureDateApiServiceInterface;
 use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
-use Modules\Users\User\Services\UserApiServiceInterface;
-use Modules\Shared\FileUpload\FileUploadServiceInterface;
 use Modules\Contribution\Services\ContributionApiServiceInterface;
 
 class ContributionApiController extends Controller
 {
-    public function __construct(protected ContributionApiServiceInterface $contributionApiService, protected UserApiServiceInterface $userApiService, protected FileUploadServiceInterface $fileUploadService, protected ClosureDateApiServiceInterface $closureDateApiService) {}
+    public function __construct(protected ContributionApiServiceInterface $contributionApiService) {}
     /**
      * Display a listing of the resource.
      */
@@ -34,9 +31,11 @@ class ContributionApiController extends Controller
     {
         $validatedData = $request->validated();
 
-        $this->contributionApiService->create($validatedData, $request->file('doc'), $request->file('images'));
-
-        return apiResponse(true, 'Contribution stored successfully');
+        $contribution = $this->contributionApiService->create($validatedData, $request->file('doc'), $request->file('images'));
+        $data = [
+            'contributions' => $contribution
+        ];
+        return apiResponse(true, 'Contribution stored successfully', $data);
     }
 
     /**

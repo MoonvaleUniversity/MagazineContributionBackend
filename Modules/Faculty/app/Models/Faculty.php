@@ -3,11 +3,14 @@
 namespace Modules\Faculty\App\Models;
 
 use App\Enums\Role;
+use App\Models\Traits\Audit;
+use App\Models\Traits\Version;
 use Modules\Users\User\App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Faculty extends Model
 {
+    use Audit, Version;
     protected $fillable = ['name', 'image_url', 'version', 'created_by', 'updated_by'];
 
     const table = 'faculties';
