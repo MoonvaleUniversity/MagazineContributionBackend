@@ -13,7 +13,10 @@ class CoordinatorApiController extends Controller
 {
     protected $coordinatorApiRelations;
 
-    public function __construct(protected CoordinatorApiServiceInterface $coordinatorApiService) {}
+    public function __construct(protected CoordinatorApiServiceInterface $coordinatorApiService)
+    {
+        $this->coordinatorApiRelations = ['images'];
+    }
 
     /**
      * Display a listing of the resource.
