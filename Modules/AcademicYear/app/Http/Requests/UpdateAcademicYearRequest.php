@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace Modules\AcademicYear\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AcademicApiRequest extends FormRequest
+class UpdateAcademicYearRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

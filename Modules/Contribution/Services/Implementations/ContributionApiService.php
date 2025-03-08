@@ -92,6 +92,7 @@ class ContributionApiService implements ContributionApiServiceInterface
             DB::commit();
             Cache::clear([ContributionCache::GET_KEY, ContributionCache::GET_ALL_KEY]);
 
+            $contribution->load('images');
             return $contribution;
         } catch (\Throwable $e) {
             DB::rollBack();
