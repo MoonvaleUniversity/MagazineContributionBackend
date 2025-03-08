@@ -33,7 +33,7 @@ interface FacultyApiServiceInterface
      */
     public function getAll($relations = null, $limit = null, $offset = null, $noPagination = null, $pagPerPage = null, $conds = null);
 
-    public function create($facultyData);
+    public function create($facultyData, $imageFile);
 
     public function update($id, $facultyData);
 

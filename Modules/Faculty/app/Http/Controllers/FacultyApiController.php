@@ -4,21 +4,33 @@ namespace Modules\Faculty\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Modules\Faculty\App\Http\Requests\StoreFacultyApiRequest;
-use App\Http\Requests\UpdateFacultyApiRequest;
+use Illuminate\Http\Request;
+use Modules\Faculty\App\Http\Requests\DeleteFacultyApiRequest;
+use Modules\Faculty\App\Http\Requests\UpdateFacultyApiRequest;
+use Modules\Faculty\App\Http\Requests\ViewFacultyApiRequest;
 use Modules\Faculty\App\Http\Resources\FacultyApiResource;
 use Modules\Faculty\Services\FacultyApiServiceInterface;
 
 class FacultyApiController extends Controller
 {
-    public function __construct(protected FacultyApiServiceInterface $facultyApiService) {}
+    protected $facultyApiRelations;
+
+    public function __construct(protected FacultyApiServiceInterface $facultyApiService)
+    {
+        $this->facultyApiRelations = [];
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ViewFacultyApiRequest $request)
     {
-        $faculty = $this->facultyApiService->getAll();
+        [$limit, $offset] = getLimitOffsetFromRequest($request);
+        [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
+        $conds = $this->getFilterConditions($request);
+
+        $faculties = $this->facultyApiService->getAll($this->facultyApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
         $data = [
-            'faculty' => FacultyApiResource::collection($faculty)
+            'faculties' => boolval($noPagination) || boolval($pagPerPage) ? FacultyApiResource::collection($faculties) : FacultyApiResource::collection($faculties)->response()->getData(true)
         ];
         return apiResponse(true, 'Data retrived successfully', $data);
     }
@@ -29,9 +41,9 @@ class FacultyApiController extends Controller
     public function store(StoreFacultyApiRequest $request)
     {
         $validatedData = $request->validated();
-        $faculty = $this->facultyApiService->create($validatedData);
+        $faculties = $this->facultyApiService->create($validatedData, $request->file('image'));
         $data = [
-            'faculty' => new FacultyApiResource($faculty)
+            'faculties' => new FacultyApiResource($faculties)
         ];
         return apiResponse(true, 'Data Store Successfully', $data);
     }
@@ -41,9 +53,9 @@ class FacultyApiController extends Controller
      */
     public function show(string $id)
     {
-        $faculty = $this->facultyApiService->get($id);
+        $faculties = $this->facultyApiService->get($id);
         $data = [
-            'faculty' => new FacultyApiResource($faculty)
+            'faculties' => new FacultyApiResource($faculties)
         ];
         try {
             return apiResponse(true, "Show data successfully", $data);
@@ -59,9 +71,9 @@ class FacultyApiController extends Controller
     {
         $validatedData = $request->validated();
         try {
-            $faculty = $this->facultyApiService->update($id, $validatedData);
+            $faculties = $this->facultyApiService->update($id, $validatedData);
             $data = [
-                'faculty' => new FacultyApiResource($faculty)
+                'faculties' => new FacultyApiResource($faculties)
             ];
             return apiResponse(true, "Update Data Successfully", $data, 200);
         } catch (\Exception $e) {
@@ -72,9 +84,25 @@ class FacultyApiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(DeleteFacultyApiRequest $request, string $id)
     {
         $deleted = $this->facultyApiService->delete($id);
         return $deleted ? apiResponse(true, "Successfully Deleted") : apiResponse(false, errors: ["404 Not Found"], statusCode: 404);
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    /// Private Functions
+    ////////////////////////////////////////////////////////////////////
+
+    //-------------------------------------------------------------------
+    // Data Preparations
+    //-------------------------------------------------------------------
+    private function getFilterConditions(Request $request)
+    {
+        return [
+            'name' => $request->name,
+            'student@@id' => $request->student_id,
+            'user@@id' => $request->user_id,
+        ];
     }
 }

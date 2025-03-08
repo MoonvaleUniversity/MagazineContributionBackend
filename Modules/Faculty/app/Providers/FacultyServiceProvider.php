@@ -24,9 +24,10 @@ class FacultyServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
         Route::prefix('api/v1')
-            ->middleware('api') // Apply any middleware if needed
+            ->middleware(['api', 'auth:sanctum']) // Apply any middleware if needed
             ->group(function () {
                 require __DIR__ . '/../../routes/api_v1.0.php';
             });
+        $this->mergeConfigFrom(__DIR__ . "/../../config/config.php", 'faculty');
     }
 }

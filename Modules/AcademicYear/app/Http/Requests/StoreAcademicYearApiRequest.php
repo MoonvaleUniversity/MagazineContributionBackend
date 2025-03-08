@@ -4,9 +4,11 @@ namespace Modules\AcademicYear\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Modules\Users\User\Services\UserApiServiceInterface;
 
-class UpdateAcademicYearRequest extends FormRequest
+class StoreAcademicYearApiRequest extends FormRequest
 {
+    public function __construct(protected UserApiServiceInterface $userApiService) {}
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -14,7 +16,7 @@ class UpdateAcademicYearRequest extends FormRequest
     {
         $userId = Auth::user()->id;
         $user = $this->userApiService->get($userId);
-        if ($user->hasPermissionTo('academic-year.update', 'api')) {
+        if ($user->hasPermissionTo('academic-year.create', 'api')) {
             return true;
         }
         return false;
@@ -28,7 +30,7 @@ class UpdateAcademicYearRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "year_name"=>"required"
+            "year_name" => "required"
         ];
     }
 }

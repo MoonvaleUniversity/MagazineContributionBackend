@@ -2,13 +2,17 @@
 
 namespace Modules\AcademicYear\App\Models;
 
+use App\Models\Traits\Audit;
 use Modules\Users\User\App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Modules\ClosureDate\App\Models\ClosureDate;
 use App\Enums\Role;
+use App\Models\Traits\Version;
 
 class AcademicYear extends Model
 {
+    use Audit, Version;
+    
     protected $fillable = ['year_name', 'version', 'created_by', 'updated_by'];
 
     const table = 'academic_years';

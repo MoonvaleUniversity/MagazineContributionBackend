@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Modules\Users\User\Services\UserApiServiceInterface;
 
-class StoreAcademicApiRequest extends FormRequest
+class DeleteAcademicYearApiRequest extends FormRequest
 {
     public function __construct(protected UserApiServiceInterface $userApiService) {}
     /**
@@ -16,7 +16,7 @@ class StoreAcademicApiRequest extends FormRequest
     {
         $userId = Auth::user()->id;
         $user = $this->userApiService->get($userId);
-        if ($user->hasPermissionTo('academic-year.create')) {
+        if ($user->hasPermissionTo('academic-year.delete', 'api')) {
             return true;
         }
         return false;
@@ -29,8 +29,6 @@ class StoreAcademicApiRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            "year_name" => "required"
-        ];
+        return [];
     }
 }

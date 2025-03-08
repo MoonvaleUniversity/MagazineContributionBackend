@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Modules\AcademicYear\App\Http\Requests\UpdateAcademicYearRequest;
 use Modules\AcademicYear\App\Http\Resources\AcademicYearApiResource;
 use Illuminate\Http\Request;
-use Modules\AcademicYear\App\Http\Requests\StoreAcademicApiRequest;
+use Modules\AcademicYear\App\Http\Requests\DeleteAcademicYearApiRequest;
+use Modules\AcademicYear\App\Http\Requests\StoreAcademicYearApiRequest;
+use Modules\AcademicYear\App\Http\Requests\ViewAcademicYearApiRequest;
 use Modules\AcademicYear\Services\AcademicYearApiServiceInterface;
 
 class AcademicYearApiController extends Controller
@@ -17,15 +19,15 @@ class AcademicYearApiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(ViewAcademicYearApiRequest $request)
     {
         [$limit, $offset] = getLimitOffsetFromRequest($request);
         [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
         $conds = $this->getFilterConditions($request);
 
-        $academic_year = $this->academicYearApiService->getAll($this->academicYearApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
+        $academicYears = $this->academicYearApiService->getAll($this->academicYearApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
         $data = [
-            'academic_year' => AcademicYearApiResource::collection($academic_year)
+            'academic_years' => boolval($noPagination) || boolval($pagPerPage) ? AcademicYearApiResource::collection($academicYears) : AcademicYearApiResource::collection($academicYears)->response()->getData(true)
         ];
         return apiResponse(true, 'Data retrived successfully', $data);
     }
@@ -33,12 +35,12 @@ class AcademicYearApiController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAcademicApiRequest $request)
+    public function store(StoreAcademicYearApiRequest $request)
     {
         $validatedData = $request->validated();
-        $academic_year = $this->academicYearApiService->create($validatedData);
+        $academicYears = $this->academicYearApiService->create($validatedData);
         $data = [
-            'academic_year' => new AcademicYearApiResource($academic_year)
+            'academic_years' => new AcademicYearApiResource($academicYears)
         ];
         return apiResponse(true, 'Data Store Successfully', $data);
     }
@@ -46,11 +48,11 @@ class AcademicYearApiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(ViewAcademicYearApiRequest $request, string $id)
     {
-        $academic_year = $this->academicYearApiService->get($id);
+        $academicYears = $this->academicYearApiService->get($id);
         $data = [
-            'academic_year' => new AcademicYearApiResource($academic_year)
+            'academic_years' => new AcademicYearApiResource($academicYears)
         ];
         return apiResponse(true, "Show data successfully", $data);
     }
@@ -61,9 +63,9 @@ class AcademicYearApiController extends Controller
     public function update(UpdateAcademicYearRequest $request, string $id)
     {
         $validatedData = $request->validated();
-        $closureDate = $this->academicYearApiService->update($id, $validatedData);
+        $academicYears = $this->academicYearApiService->update($id, $validatedData);
         $data = [
-            'closure_dates' => new AcademicYearApiResource($closureDate)
+            'academic_years' => new AcademicYearApiResource($academicYears)
         ];
         return apiResponse(true, "Update Data Successfully", $data, 200);
     }
@@ -71,7 +73,7 @@ class AcademicYearApiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(DeleteAcademicYearApiRequest $request, string $id)
     {
         $deleted = $this->academicYearApiService->delete($id);
         return $deleted ? apiResponse(true, "Successfully Deleted") : apiResponse(false, errors: ["404 Not Found"], statusCode: 404);
