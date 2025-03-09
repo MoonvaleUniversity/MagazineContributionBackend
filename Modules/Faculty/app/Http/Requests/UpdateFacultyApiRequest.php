@@ -17,7 +17,7 @@ class UpdateFacultyApiRequest extends FormRequest
     {
         $userId = Auth::user()->id;
         $user = $this->userApiService->get($userId);
-        if ($user->hasPermissionTo('faculty.update', 'api')) {
+        if ($user->hasPermissionTo('faculty.edit', 'api')) {
             return true;
         }
         return false;
@@ -32,7 +32,7 @@ class UpdateFacultyApiRequest extends FormRequest
     {
         return [
             "name" => "required|string",
-            'image' => 'required|image',
+            'image' => 'nullable|image',
         ];
     }
 }

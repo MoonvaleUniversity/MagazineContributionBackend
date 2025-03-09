@@ -35,7 +35,7 @@ interface FacultyApiServiceInterface
 
     public function create($facultyData, $imageFile);
 
-    public function update($id, $facultyData);
+    public function update($id, $facultyData,$imageFile = null);
 
     public function delete($id);
 }

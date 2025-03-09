@@ -82,11 +82,17 @@ class FacultyApiService implements FacultyApiServiceInterface
         }
     }
 
-    public function update($id, $facultyData)
+    public function update($id, $facultyData, $imageFile = null)
     {
         //write db connection
         DB::beginTransaction();
         try {
+            if ($imageFile) {
+                $faculty = $this->get($id);
+                $this->fileUploadService->delete($faculty[Faculty::image_url]);
+                $facultyData[Faculty::image_url] = $this->fileUploadService->singleUpload(config('faculty.upload_path'), $imageFile, ['add_unix_time' => true]);
+            }
+
             $faculty = $this->updateFaculty($id, $facultyData);
 
             DB::commit();
@@ -104,6 +110,8 @@ class FacultyApiService implements FacultyApiServiceInterface
         //write db connection
         DB::beginTransaction();
         try {
+            $faculty = $this->get($id);
+            $this->fileUploadService->delete($faculty[Faculty::image_url]);
             $name = $this->deleteFaculty($id);
 
             DB::commit();

@@ -57,11 +57,7 @@ class FacultyApiController extends Controller
         $data = [
             'faculties' => new FacultyApiResource($faculties)
         ];
-        try {
-            return apiResponse(true, "Show data successfully", $data);
-        } catch (\Exception $e) {
-            return apiResponse(false, "No Data", errors: ['credentials' => ['The credentials you provided is incorrect.']]);
-        }
+        return apiResponse(true, "Show data successfully", $data);
     }
 
     /**
@@ -70,15 +66,11 @@ class FacultyApiController extends Controller
     public function update(UpdateFacultyApiRequest $request, string $id)
     {
         $validatedData = $request->validated();
-        try {
-            $faculties = $this->facultyApiService->update($id, $validatedData);
-            $data = [
-                'faculties' => new FacultyApiResource($faculties)
-            ];
-            return apiResponse(true, "Update Data Successfully", $data, 200);
-        } catch (\Exception $e) {
-            return apiResponse(false, errors: ['credentials' => ['Undefined Academic id']]);
-        }
+        $faculties = $this->facultyApiService->update($id, $validatedData, $request->file('image'));
+        $data = [
+            'faculties' => new FacultyApiResource($faculties)
+        ];
+        return apiResponse(true, "Update Data Successfully", $data, 200);
     }
 
     /**
