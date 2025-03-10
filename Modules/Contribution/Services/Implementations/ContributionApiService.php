@@ -122,7 +122,7 @@ class ContributionApiService implements ContributionApiServiceInterface
                         continue;
                     }
 
-                    $this->emailService->send('submissionEmail', $user->email, 'Your contribution has not received any comments.', ['contribution' => $contribution]);
+                    $this->emailService->send('reminder-email', $user->email, 'Your contribution has not received any comments.', ['contribution' => $contribution]);
                 }
             }
 
