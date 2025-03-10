@@ -3,15 +3,18 @@
 namespace Modules\Contribution\App\Http\Controllers;
 
 use Exception;
+use App\Models\User;
 use Mockery\Expectation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
+use Modules\Shared\Email\EmailServiceInterface;
+use Modules\Users\User\Services\UserApiServiceInterface;
 use Modules\Contribution\Services\ContributionApiServiceInterface;
+use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
 
 class ContributionApiController extends Controller
 {
-    public function __construct(protected ContributionApiServiceInterface $contributionApiService) {}
+    public function __construct(protected ContributionApiServiceInterface $contributionApiService,  protected EmailServiceInterface $emailService, protected UserApiServiceInterface $userApiService) {}
     /**
      * Display a listing of the resource.
      */
@@ -30,11 +33,20 @@ class ContributionApiController extends Controller
     public function store(StoreContributionApiRequest $request)
     {
         $validatedData = $request->validated();
+        $studentEmail = $this->userApiService->getEmailById($validatedData['user_id']);
+
+        if (!$studentEmail) {
+            return apiResponse(false, 'User email not found', [], 400);
+        }
 
         $contribution = $this->contributionApiService->create($validatedData, $request->file('doc'), $request->file('images'));
         $data = [
             'contributions' => $contribution
         ];
+
+        //Email Sent When Contribution Is Upload
+            $this->emailService->send('submissionEmail', $studentEmail, 'Submission Successful',[]);
+
         return apiResponse(true, 'Contribution stored successfully', $data);
     }
 
@@ -46,6 +58,10 @@ class ContributionApiController extends Controller
         //
     }
 
+    public function emailAuto()
+    {
+        $this->contributionApiService->automatic();
+    }
     /**
      * Update the specified resource in storage.
      */
