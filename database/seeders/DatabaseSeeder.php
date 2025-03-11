@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user = User::firstOrCreate([
-            'email' => 'studen@mv.com',
+            'email' => 'yunbira2412@gmail.com',
         ], [
             'name' => 'Bee Bee',
             'password' => 'password',
@@ -45,8 +45,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user = User::where('email', 'yunbira2412@gmail.com')->first();
-        if (!$user->hasRole(Role::STUDENT)) {
-            $user->assignRole(Role::STUDENT);
+        if (!$user->hasRole(Role::STUDENT->label())) {
+            $user->assignRole(Role::STUDENT->label());
         }
 
         $admin = User::firstOrCreate([
@@ -58,8 +58,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $admin = User::where('email', 'admin@mv.com')->first();
-        if (!$admin->hasRole(Role::ADMIN)) {
-            $admin->assignRole(Role::ADMIN);
+        if (!$admin->hasRole(Role::ADMIN->label())) {
+            $admin->assignRole(Role::ADMIN->label());
+            
         }
 
         $manager = User::firstOrCreate([
@@ -71,8 +72,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $manager = User::where('email', 'manager@mv.com')->first();
-        if (!$manager->hasRole(Role::MARKETING_MANAGER)) {
-            $manager->assignRole(Role::MARKETING_MANAGER);
+        if (!$manager->hasRole(Role::MARKETING_MANAGER->label())) {
+            $manager->assignRole(Role::MARKETING_MANAGER->label());
         }
     }
 }
