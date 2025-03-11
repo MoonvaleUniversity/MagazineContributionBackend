@@ -4,8 +4,9 @@ namespace Modules\Users\Student\App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Modules\Users\Student\Services\Implementations\StudentApiService;
 use Modules\Users\Student\Services\StudentApiServiceInterface;
+use Modules\Users\Student\Services\Implementations\StudentApiService;
+
 
 class StudentServiceProvier extends ServiceProvider
 {
