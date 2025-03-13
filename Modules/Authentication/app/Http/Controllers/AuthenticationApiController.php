@@ -35,9 +35,9 @@ class AuthenticationApiController extends Controller
         $data = $request->validated();
         $user = $this->userApiService->get(conds: ['email' => $request->email]);
 
-        // if (! $user->email_verified_at) {
-        //     return apiResponse(false, 'You need to verify your email first.', statusCode: 401, errors: ['email' => ['You need to verify your email first.']]);
-        // }
+        if (! $user->email_verified_at) {
+            return apiResponse(false, 'You need to verify your email first.', statusCode: 401, errors: ['email' => ['You need to verify your email first.']]);
+        }
         if (! Auth::guard('web')->attempt($request->only('email', 'password'))) {
             return apiResponse(false, 'Invaliad Credentials.', statusCode: 401, errors: ['credentials' => ['The credentials you provided is incorrect.']]);
         }

@@ -34,20 +34,20 @@ class DatabaseSeeder extends Seeder
             'final_closure_date' => now()->addMonths(8)
         ]);
 
-        // $user = User::firstOrCreate([
-        //     'email' => 'studen@mv.com',
-        // ], [
-        //     'name' => 'Bee Bee',
-        //     'password' => 'password',
-        //     'faculty_id' => $faculty->id,
-        //     'academic_year_id' => $academicYear->id,
-        //     'email_verified_at' => now()
-        // ]);
+        $user = User::firstOrCreate([
+            'email' => 'studen@mv.com',
+        ], [
+            'name' => 'Bee Bee',
+            'password' => 'password',
+            'faculty_id' => $faculty->id,
+            'academic_year_id' => $academicYear->id,
+            'email_verified_at' => now()
+        ]);
 
-        // $user = User::where('email', 'yunbira2412@gmail.com')->first();
-        // if (!$user->hasRole(Role::STUDENT)) {
-        //     $user->assignRole(Role::STUDENT);
-        // }
+        $user = User::where('email', 'yunbira2412@gmail.com')->first();
+        if (!$user->hasRole(Role::STUDENT)) {
+            $user->assignRole(Role::STUDENT);
+        }
 
         $admin = User::firstOrCreate([
             'email' => 'admin@mv.com',
