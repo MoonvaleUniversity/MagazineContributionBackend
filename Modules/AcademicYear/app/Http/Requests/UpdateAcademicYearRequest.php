@@ -4,9 +4,11 @@ namespace Modules\AcademicYear\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Modules\AcademicYear\Services\AcademicYearApiServiceInterface;
 
 class UpdateAcademicYearRequest extends FormRequest
 {
+    public function __construct(protected AcademicYearApiServiceInterface $academicYearApiService) {}
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -28,7 +30,7 @@ class UpdateAcademicYearRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "year_name"=>"required"
+            "year_name" => "required"
         ];
     }
 }
