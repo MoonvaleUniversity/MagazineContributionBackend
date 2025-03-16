@@ -11,13 +11,21 @@ use Modules\Contribution\Services\ContributionApiServiceInterface;
 
 class ContributionApiController extends Controller
 {
-    public function __construct(protected ContributionApiServiceInterface $contributionApiService) {}
+    protected $contributionApiRelations;
+    public function __construct(protected ContributionApiServiceInterface $contributionApiService)
+    {
+        $this->contributionApiRelations = ['images'];
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $contribution = $this->contributionApiService->getAll();
+        [$limit, $offset] = getLimitOffsetFromRequest($request);
+        [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
+        $conds = $this->getFilterConditions($request);
+
+        $contribution = $this->contributionApiService->getAll($this->contributionApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
         $data = [
             'contributions' => $contribution
         ];
@@ -60,5 +68,25 @@ class ContributionApiController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    /// Private Functions
+    ////////////////////////////////////////////////////////////////////
+
+    //-------------------------------------------------------------------
+    // Data Preparations
+    //-------------------------------------------------------------------
+    private function getFilterConditions(Request $request)
+    {
+        return [
+            'name' => $request->name,
+            'user_id' => $request->user_id,
+            'user_id@@name' => $request->user_name,
+            'user_id@@academic_year_id' => $request->user_academic_year_id,
+            'closure_date_id' => $request->closure_date_id,
+            'closure_date_id@@academic_year_id' => $request->closure_date_academic_year_id,
+            'is_selected_for_publication' => $request->is_selected_for_publication
+        ];
     }
 }
