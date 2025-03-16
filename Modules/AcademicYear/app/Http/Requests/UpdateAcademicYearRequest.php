@@ -14,7 +14,7 @@ class UpdateAcademicYearRequest extends FormRequest
     {
         $userId = Auth::user()->id;
         $user = $this->userApiService->get($userId);
-        if ($user->hasPermissionTo('academic-year.update', 'api')) {
+        if ($user->hasPermissionTo('academic-year.edit', 'api')) {
             return true;
         }
         return false;
