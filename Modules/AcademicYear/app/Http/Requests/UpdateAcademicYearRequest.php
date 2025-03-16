@@ -4,11 +4,11 @@ namespace Modules\AcademicYear\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Modules\AcademicYear\Services\AcademicYearApiServiceInterface;
+use Modules\Users\User\Services\UserApiServiceInterface;
 
 class UpdateAcademicYearRequest extends FormRequest
 {
-    public function __construct(protected AcademicYearApiServiceInterface $academicYearApiService) {}
+    public function __construct(protected UserApiServiceInterface $userApiService) {}
     /**
      * Determine if the user is authorized to make this request.
      */
