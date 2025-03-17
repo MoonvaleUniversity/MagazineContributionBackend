@@ -1,24 +1,27 @@
 <?php
 
-namespace Modules\Users\Coordinator\App\Http\Requests;
+namespace Modules\Users\Guest\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Modules\Users\Manager\Services\ManagerApiServiceInterface;
+use Modules\Users\Coordinator\Services\CoordinatorApiServiceInterface;
 
-class StoreCoordinatorApiRequest extends FormRequest
+class UpdateGuestApiRequest extends FormRequest
 {
-    public function __construct(protected ManagerApiServiceInterface $managerApiService) {}
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        $userId = Auth::user()->id;
-        $manager = $this->managerApiService->get($userId);
-        if (!$manager) {
+        $currentUserId = Auth::id();
+
+        $routeCoordinatorId = $this->route('id');
+
+        // Prevent user from updating another coordinator's data
+        if ((int) $currentUserId !== (int) $routeCoordinatorId) {
             return false;
         }
+
         return true;
     }
 
@@ -29,11 +32,13 @@ class StoreCoordinatorApiRequest extends FormRequest
      */
     public function rules(): array
     {
+        $routeCoordinatorId = $this->route('id');
+
         return [
             'name' => 'required',
             'faculty_id' => 'required|exists:faculties,id',
             'password' => 'required|confirmed',
-            'email' => 'required|unique:users,email'
+            'email' => "required|unique:users,email,$routeCoordinatorId"
         ];
     }
 }

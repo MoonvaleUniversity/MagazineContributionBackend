@@ -53,7 +53,7 @@ class AdminApiController extends Controller
         $data = [
             'admin' => new AdminApiResource($admin)
         ];
-        return apiResponse(true, 'Data retrived successfully', $data);
+        return apiResponse(true, 'Data retrieved successfully', $data);
     }
 
     /**
@@ -66,15 +66,16 @@ class AdminApiController extends Controller
         $data = [
             'admin' => new AdminApiResource($admin)
         ];
-        return apiResponse(true, 'User updated successfully', $data);
+        return apiResponse(true, 'Admin updated successfully', $data);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $data = $this->adminApiService->delete($id);
+        return apiResponse(true,  'Deleted successfully', $data);
     }
 
     ////////////////////////////////////////////////////////////////////

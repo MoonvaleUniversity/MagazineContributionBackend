@@ -1,26 +1,27 @@
 <?php
 
-namespace Modules\Users\Coordinator\App\Http\Requests;
+namespace Modules\Users\Manager\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Modules\Users\Manager\Services\ManagerApiServiceInterface;
+use Modules\Users\Admin\Services\AdminApiServiceInterface;
 
-class StoreCoordinatorApiRequest extends FormRequest
+class StoreManagerRequest extends FormRequest
 {
-    public function __construct(protected ManagerApiServiceInterface $managerApiService) {}
+    public function __construct(protected AdminApiServiceInterface $adminApiService) {}
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
         $userId = Auth::user()->id;
-        $manager = $this->managerApiService->get($userId);
-        if (!$manager) {
+        $admin = $this->adminApiService->get($userId);
+        if (!$admin) {
             return false;
         }
         return true;
     }
+
 
     /**
      * Get the validation rules that apply to the request.
