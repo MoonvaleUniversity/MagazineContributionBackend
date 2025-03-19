@@ -70,6 +70,17 @@ class ContributionApiController extends Controller
         //
     }
 
+    public function publish(string $id)
+    {
+        $data = $this->contributionApiService->updatePublish($id);
+        return apiResponse(true, 'Contribution was published successfully', $data);
+    }
+
+    public function downloadZipFile(string $id)
+    {
+        $data = $this->contributionApiService->downloadZip($id);
+        return $data;
+    }
     /**
      * Remove the specified resource from storage.
      */

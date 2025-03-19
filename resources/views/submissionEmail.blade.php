@@ -29,7 +29,7 @@ text-align: center;
     text-align: center;
     width: 100%;
 ">
-    <h3 class="text fw-bold">Your contribution submission was Successful</h3>
+    <h3 class="text fw-bold">{{ $student->name }} submitted the contribution successfully at {{ $student->created_at }}</h3>
 
 </div>
 </div>

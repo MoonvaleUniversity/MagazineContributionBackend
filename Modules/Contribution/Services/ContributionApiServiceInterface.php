@@ -45,6 +45,10 @@ interface ContributionApiServiceInterface
 
     public function update();
 
+    public function updatePublish($id);
+
+    public function downloadZip($id);
+
     public function delete();
 
     public function automatic();
