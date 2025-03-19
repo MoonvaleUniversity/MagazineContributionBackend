@@ -1,22 +1,22 @@
 <?php
 
-namespace Modules\Users\Coordinator\App\Http\Requests;
+namespace Modules\Users\Guest\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Modules\Users\Manager\Services\ManagerApiServiceInterface;
+use Modules\Users\Coordinator\Services\CoordinatorApiServiceInterface;
 
-class StoreCoordinatorApiRequest extends FormRequest
+class StoreGuestApiRequest extends FormRequest
 {
-    public function __construct(protected ManagerApiServiceInterface $managerApiService) {}
+    public function __construct(protected CoordinatorApiServiceInterface $coordinatorApiService) {}
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
         $userId = Auth::user()->id;
-        $manager = $this->managerApiService->get($userId);
-        if (!$manager) {
+        $coordinators = $this->coordinatorApiService->get($userId);
+        if (!$coordinators) {
             return false;
         }
         return true;

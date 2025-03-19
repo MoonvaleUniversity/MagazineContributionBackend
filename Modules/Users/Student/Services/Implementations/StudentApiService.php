@@ -4,10 +4,11 @@ namespace Modules\Users\Student\Services\Implementations;
 
 use App\Enums\Role;
 use Modules\Users\Student\Services\StudentApiServiceInterface;
+use Modules\Users\User\Services\UserApiServiceInterface;
 
 class StudentApiService implements StudentApiServiceInterface
 {
-    public function __construct(protected StudentApiServiceInterface $studentApiService) {}
+    public function __construct(protected UserApiServiceInterface $studentApiService) {}
 
     public function get($id = null, $relations = null, $conds = null)
     {

@@ -28,7 +28,7 @@ class AuthenticationApiController extends Controller
 
     // Admin will create users according to their suitable role
     public function register(){}
-    
+
     // // Users login section
     public function login(LoginApiRequest $request)
     {

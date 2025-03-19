@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Modules\AcademicYear\App\Models\AcademicYear;
 use Modules\Article\App\Models\Article;
 use Modules\Contribution\App\Models\Contribution;
+use Modules\Contribution\App\Models\ContributionImage;
 use Modules\Faculty\App\Models\Faculty;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -112,5 +113,9 @@ class User extends Authenticatable
     public function getRoleAttribute()
     {
         return $this->getRoleNames()->first();
+    }
+    public function images()
+    {
+        return $this->hasMany(ContributionImage::class, ContributionImage::contribution_id, self::id);
     }
 }
