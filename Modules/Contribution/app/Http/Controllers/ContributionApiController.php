@@ -1,18 +1,17 @@
 <?php
-
 namespace Modules\Contribution\App\Http\Controllers;
 
-use Exception;
-use Mockery\Expectation;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
 use Modules\Contribution\Services\ContributionApiServiceInterface;
+use Modules\Shared\Email\EmailServiceInterface;
+use Modules\Users\User\Services\UserApiServiceInterface;
 
 class ContributionApiController extends Controller
 {
     protected $contributionApiRelations;
-    public function __construct(protected ContributionApiServiceInterface $contributionApiService)
+    public function __construct(protected ContributionApiServiceInterface $contributionApiService, protected UserApiServiceInterface $userApiService, protected EmailServiceInterface $emailService)
     {
         $this->contributionApiRelations = ['images'];
     }
@@ -21,13 +20,13 @@ class ContributionApiController extends Controller
      */
     public function index(Request $request)
     {
-        [$limit, $offset] = getLimitOffsetFromRequest($request);
+        [$limit, $offset]            = getLimitOffsetFromRequest($request);
         [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
-        $conds = $this->getFilterConditions($request);
+        $conds                       = $this->getFilterConditions($request);
 
         $contribution = $this->contributionApiService->getAll($this->contributionApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
-        $data = [
-            'contributions' => $contribution
+        $data         = [
+            'contributions' => $contribution,
         ];
         return apiResponse(true, 'Data retrieve successfully', $data);
     }
@@ -38,11 +37,30 @@ class ContributionApiController extends Controller
     public function store(StoreContributionApiRequest $request)
     {
         $validatedData = $request->validated();
+        $studentUser     = $this->userApiService->get($validatedData['user_id']);
 
         $contribution = $this->contributionApiService->create($validatedData, $request->file('doc'), $request->file('images'));
-        $data = [
-            'contributions' => $contribution
+        $data         = [
+            'contributions' => $contribution,
         ];
+
+        $marketingCoordinator = $this->userApiService->getAll(
+            conds: [
+                'faculty_id' => $studentUser->faculty_id
+            ],relations: ['roles'])
+            ->filter(function($user) {
+            return $user->roles->contains('name', 'Marketing Coordinator');})->first();
+
+        if ($marketingCoordinator) {
+            // dd($marketingCoordinator->email);
+            $this->emailService->send('submissionEmail', $marketingCoordinator->email,'Student`s contributions submission',['student'=>$studentUser]);
+
+        } else {
+            return apiResponse(false, 'Marketing coordinator not found for this faculty.');
+        }
+
+
+
         return apiResponse(true, 'Contribution stored successfully', $data);
     }
 
@@ -80,13 +98,13 @@ class ContributionApiController extends Controller
     private function getFilterConditions(Request $request)
     {
         return [
-            'name' => $request->name,
-            'user_id' => $request->user_id,
-            'user_id@@name' => $request->user_name,
-            'user_id@@academic_year_id' => $request->user_academic_year_id,
-            'closure_date_id' => $request->closure_date_id,
+            'name'                              => $request->name,
+            'user_id'                           => $request->user_id,
+            'user_id@@name'                     => $request->user_name,
+            'user_id@@academic_year_id'         => $request->user_academic_year_id,
+            'closure_date_id'                   => $request->closure_date_id,
             'closure_date_id@@academic_year_id' => $request->closure_date_academic_year_id,
-            'is_selected_for_publication' => $request->is_selected_for_publication
+            'is_selected_for_publication'       => $request->is_selected_for_publication,
         ];
     }
 }
