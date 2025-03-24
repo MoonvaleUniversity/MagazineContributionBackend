@@ -15,4 +15,5 @@ interface EmailServiceInterface
      * @return void
      */
     public function send(string $view, string $email, string $subject, array $data);
+    public function raw(string $view, string $email, string $subject);
 }

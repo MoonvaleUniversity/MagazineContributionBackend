@@ -7,7 +7,15 @@ use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
 use Modules\Contribution\Services\ContributionApiServiceInterface;
 use Modules\Shared\Email\EmailServiceInterface;
 use Modules\Users\User\Services\UserApiServiceInterface;
-
+use Exception;
+use App\Models\User;
+use Mockery\Expectation;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Modules\Shared\Email\EmailServiceInterface;
+use Modules\Users\User\Services\UserApiServiceInterface;
+use Modules\Contribution\Services\ContributionApiServiceInterface;
+use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
 class ContributionApiController extends Controller
 {
     protected $contributionApiRelations;
@@ -23,7 +31,6 @@ class ContributionApiController extends Controller
         [$limit, $offset]            = getLimitOffsetFromRequest($request);
         [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
         $conds                       = $this->getFilterConditions($request);
-
         $contribution = $this->contributionApiService->getAll($this->contributionApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
         $data         = [
             'contributions' => $contribution,
@@ -37,13 +44,17 @@ class ContributionApiController extends Controller
     public function store(StoreContributionApiRequest $request)
     {
         $validatedData = $request->validated();
-        $studentUser     = $this->userApiService->get($validatedData['user_id']);
-
+        $studentUser = $this->userApiService->getEmailById($validatedData['user_id']);
+        $studentEmail = $this->userApiService->getEmailById($validatedData['user_id']);
+        if (!$studentEmail) {
+            return apiResponse(false, 'User email not found', [], 400);
+        }
         $contribution = $this->contributionApiService->create($validatedData, $request->file('doc'), $request->file('images'));
         $data         = [
             'contributions' => $contribution,
         ];
 
+        //Email Sent When Contribution Is Upload
         $marketingCoordinator = $this->userApiService->getAll(
             conds: [
                 'faculty_id' => $studentUser->faculty_id
@@ -58,9 +69,7 @@ class ContributionApiController extends Controller
         } else {
             return apiResponse(false, 'Marketing coordinator not found for this faculty.');
         }
-
-
-
+        $this->emailService->send('submissionEmail', $studentEmail, 'Submission Successful',[]);
         return apiResponse(true, 'Contribution stored successfully', $data);
     }
 
@@ -72,6 +81,10 @@ class ContributionApiController extends Controller
         //
     }
 
+    public function emailAuto()
+    {
+        $this->contributionApiService->automatic();
+    }
     /**
      * Update the specified resource in storage.
      */
@@ -80,6 +93,17 @@ class ContributionApiController extends Controller
         //
     }
 
+    public function publish(string $id)
+    {
+        $data = $this->contributionApiService->updatePublish($id);
+        return apiResponse(true, 'Contribution was published successfully', $data);
+    }
+
+    public function downloadZipFile(string $id)
+    {
+        $data = $this->contributionApiService->downloadZip($id);
+        return $data;
+    }
     /**
      * Remove the specified resource from storage.
      */
