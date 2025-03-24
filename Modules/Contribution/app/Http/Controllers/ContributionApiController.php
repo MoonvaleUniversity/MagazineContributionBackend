@@ -14,6 +14,7 @@ use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
 
 class ContributionApiController extends Controller
 {
+    public function __construct(protected ContributionApiServiceInterface $contributionApiService,  protected EmailServiceInterface $emailService, protected UserApiServiceInterface $userApiService) {}
     protected $contributionApiRelations;
     public function __construct(protected ContributionApiServiceInterface $contributionApiService,  protected EmailServiceInterface $emailService, protected UserApiServiceInterface $userApiService) {
       $this->contributionApiRelations = ['images'];
@@ -40,20 +41,33 @@ class ContributionApiController extends Controller
     public function store(StoreContributionApiRequest $request)
     {
         $validatedData = $request->validated();
+        $studentUser = $this->userApiService->getEmailById($validatedData['user_id']);
         $studentEmail = $this->userApiService->getEmailById($validatedData['user_id']);
 
         if (!$studentEmail) {
             return apiResponse(false, 'User email not found', [], 400);
         }
-
         $contribution = $this->contributionApiService->create($validatedData, $request->file('doc'), $request->file('images'));
         $data = [
             'contributions' => $contribution
         ];
 
         //Email Sent When Contribution Is Upload
-            $this->emailService->send('submissionEmail', $studentEmail, 'Submission Successful',[]);
+        $marketingCoordinator = $this->userApiService->getAll(
+            conds: [
+                'faculty_id' => $studentUser->faculty_id
+            ],relations: ['roles'])
+            ->filter(function($user) {
+            return $user->roles->contains('name', 'Marketing Coordinator');})->first();
 
+        if ($marketingCoordinator) {
+            // dd($marketingCoordinator->email);
+            $this->emailService->send('submissionEmail', $marketingCoordinator->email,'Student`s contributions submission',['student'=>$studentUser]);
+
+        } else {
+            return apiResponse(false, 'Marketing coordinator not found for this faculty.');
+        }
+            $this->emailService->send('submissionEmail', $studentEmail, 'Submission Successful',[]);
         return apiResponse(true, 'Contribution stored successfully', $data);
     }
 

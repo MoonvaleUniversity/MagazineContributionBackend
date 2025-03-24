@@ -108,6 +108,7 @@ class ContributionApiService implements ContributionApiServiceInterface
         DB::beginTransaction();
 
         try {
+            $timer = now()->subMinutes(5);
             $timer         = now()->subMinutes(5);
             $contributions = Contribution::where('created_at', '<=', $timer)
                 ->get();
@@ -116,7 +117,14 @@ class ContributionApiService implements ContributionApiServiceInterface
                 $commentCount = DB::table('comments')
                     ->where('contribution_id', $contribution->id)
                     ->count();
-
+                    if ($commentCount == 0) {
+                    $user = User::find($contribution->user_id);
+                    $marketingCoordinator = $this->userApiService->getAll(
+                        conds: [
+                            'faculty_id' => $user->faculty_id
+                        ],relations: ['roles'])
+                        ->filter(function($user) {
+                        return $user->roles->contains('name', 'Marketing Coordinator');})->first();
                 if ($commentCount == 0) {
                     $user                 = User::find($contribution->user_id);
                     $marketingCoordinator = $this->userApiService->getAll(
@@ -126,7 +134,6 @@ class ContributionApiService implements ContributionApiServiceInterface
                         ->filter(function ($user) {
                             return $user->roles->contains('name', 'Marketing Coordinator');
                         })->first();
-
                     $user = User::find($contribution->user_id);
                     if (! $user) {
                         return apiResponse(false, 'Marketing coordinator not found for this faculty.');
