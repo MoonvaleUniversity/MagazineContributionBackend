@@ -3,23 +3,31 @@
 namespace Modules\AcademicYear\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Modules\AcademicYear\App\Http\Requests\UpdateAcademicYearRequest;
 use Modules\AcademicYear\App\Http\Resources\AcademicYearApiResource;
 use Illuminate\Http\Request;
+use Modules\AcademicYear\App\Http\Requests\DeleteAcademicYearApiRequest;
+use Modules\AcademicYear\App\Http\Requests\StoreAcademicYearApiRequest;
+use Modules\AcademicYear\App\Http\Requests\ViewAcademicYearApiRequest;
 use Modules\AcademicYear\Services\AcademicYearApiServiceInterface;
-use Modules\Users\User\App\Http\Requests\StoreUserApiRequest;
-use Modules\Users\User\App\Http\Requests\UpdateUserApiRequest;
 
 class AcademicYearApiController extends Controller
 {
+    protected $academicYearApiRelations;
+
     public function __construct(protected AcademicYearApiServiceInterface $academicYearApiService) {}
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ViewAcademicYearApiRequest $request)
     {
-        $academic_year = $this->academicYearApiService->getAll();
+        [$limit, $offset] = getLimitOffsetFromRequest($request);
+        [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
+        $conds = $this->getFilterConditions($request);
+
+        $academicYears = $this->academicYearApiService->getAll($this->academicYearApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
         $data = [
-            'academic_year' => AcademicYearApiResource::collection($academic_year)
+            'academic_years' => boolval($noPagination) || boolval($pagPerPage) ? AcademicYearApiResource::collection($academicYears) : AcademicYearApiResource::collection($academicYears)->response()->getData(true)
         ];
         return apiResponse(true, 'Data retrived successfully', $data);
     }
@@ -27,12 +35,12 @@ class AcademicYearApiController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreUserApiRequest $request)
+    public function store(StoreAcademicYearApiRequest $request)
     {
         $validatedData = $request->validated();
-        $academic_year = $this->academicYearApiService->create($validatedData);
+        $academicYears = $this->academicYearApiService->create($validatedData);
         $data = [
-            'academic_year' => new AcademicYearApiResource($academic_year)
+            'academic_years' => new AcademicYearApiResource($academicYears)
         ];
         return apiResponse(true, 'Data Store Successfully', $data);
     }
@@ -40,42 +48,49 @@ class AcademicYearApiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(ViewAcademicYearApiRequest $request, string $id)
     {
-        $academic_year = $this->academicYearApiService->get($id);
+        $academicYears = $this->academicYearApiService->get($id);
         $data = [
-            'academic_year' => new AcademicYearApiResource($academic_year)
+            'academic_years' => new AcademicYearApiResource($academicYears)
         ];
-        try {
-            return apiResponse(true, "Show data successfully", $data);
-        } catch (\Exception $e) {
-            return apiResponse(false, "No Data", errors: ['credentials' => ['The credentials you provided is incorrect.']]);
-        }
+        return apiResponse(true, "Show data successfully", $data);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserApiRequest $request, string $id)
+    public function update(UpdateAcademicYearRequest $request, string $id)
     {
         $validatedData = $request->validated();
-        try {
-            $closureDate = $this->academicYearApiService->update($id, $validatedData);
-            $data = [
-                'closure_dates' => new AcademicYearApiResource($closureDate)
-            ];
-            return apiResponse(true, "Update Data Successfully", $data, 200);
-        } catch (\Exception $e) {
-            return apiResponse(false, errors: ['credentials' => ['Undefined Academic id']]);
-        }
+        $academicYears = $this->academicYearApiService->update($id, $validatedData);
+        $data = [
+            'academic_years' => new AcademicYearApiResource($academicYears)
+        ];
+        return apiResponse(true, "Update Data Successfully", $data, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(DeleteAcademicYearApiRequest $request, string $id)
     {
         $deleted = $this->academicYearApiService->delete($id);
         return $deleted ? apiResponse(true, "Successfully Deleted") : apiResponse(false, errors: ["404 Not Found"], statusCode: 404);
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    /// Private Functions
+    ////////////////////////////////////////////////////////////////////
+
+    //-------------------------------------------------------------------
+    // Data Preparations
+    //-------------------------------------------------------------------
+    private function getFilterConditions(Request $request)
+    {
+        return [
+            'year_name' => $request->year_name,
+            'closure_date@@id' => $request->closure_date_id,
+        ];
     }
 }

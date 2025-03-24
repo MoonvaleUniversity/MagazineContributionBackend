@@ -148,9 +148,9 @@ class AcademicYearApiService implements AcademicYearApiServiceInterface
             ->when(isset($conds['year_name']), function ($q) use ($conds) {
                 $q->where(AcademicYear::year_name, $conds['year_name']);
             })
-            ->when(isset($conds['closure_dates@@id']), function ($q) use ($conds) {
+            ->when(isset($conds['closure_date@@id']), function ($q) use ($conds) {
                 $q->whereHas('closure_dates', function ($q) use ($conds) {
-                    $q->where(ClosureDate::id, $conds['closure_dates@@id']);
+                    $q->where(ClosureDate::id, $conds['closure_date@@id']);
                 });
             });
 

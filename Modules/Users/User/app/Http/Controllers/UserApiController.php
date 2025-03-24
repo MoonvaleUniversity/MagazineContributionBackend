@@ -26,7 +26,7 @@ class UserApiController extends Controller
 
         $users = $this->userApiService->getAll($this->userApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
         $data = [
-            'users' => boolval($noPagination) ? UserApiResource::collection($users) : $users
+            'users' => boolval($noPagination) || boolval($pagPerPage) ? UserApiResource::collection($users) : UserApiResource::collection($users)->response()->getData(true)
         ];
         return apiResponse(true, 'Data retrived successfully', $data);
     }
