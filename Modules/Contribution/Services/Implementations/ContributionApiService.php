@@ -23,9 +23,9 @@ use ZipArchive;
 
 class ContributionApiService implements ContributionApiServiceInterface
 {
+    public function __construct(protected FileUploadServiceInterface $fileUploadService, protected AcademicYearApiServiceInterface $academicYearApiService, protected FacultyApiServiceInterface $facultyApiService, protected UserApiServiceInterface $userApiService, protected EmailServiceInterface $emailService) {}
     public function __construct(protected FileUploadServiceInterface $fileUploadService, protected AcademicYearApiServiceInterface $academicYearApiService, protected FacultyApiServiceInterface $facultyApiService, protected UserApiServiceInterface $userApiService, protected EmailServiceInterface $emailService)
     {}
-
     public function get($id = null, $relations = null, $conds = null)
     {
         //read db connection
@@ -79,10 +79,11 @@ class ContributionApiService implements ContributionApiServiceInterface
         try {
             //Generate Upload Path
             $academicYear = $this->academicYearApiService->get(conds: ['closure_date_id@@id' => $contributionData['closure_date_id']]);
+            $faculty = $this->facultyApiService->get(conds: ['student_id@@id' => $contributionData['user_id']]);
+            $student = $this->userApiService->get($contributionData['user_id']);
+            $uploadPath = $this->generateUploadPath($academicYear, $faculty, $student, $contributionData['name']);
             $faculty      = $this->facultyApiService->get(conds: ['student_id@@id' => $contributionData['user_id']]);
             $student      = $this->userApiService->get($contributionData['user_id']);
-            $uploadPath   = $this->generateUploadPath($academicYear, $faculty, $student, $contributionData['name']);
-
             //Upload Word File
             $contributionData[Contribution::doc_url] = $this->fileUploadService->singleUpload($uploadPath, $wordFile, ['add_unix_time' => true]);
 
@@ -92,6 +93,7 @@ class ContributionApiService implements ContributionApiServiceInterface
             //Upload Images File
             $imageURLs = $this->fileUploadService->multiUpload($uploadPath, $imageFiles);
             $this->createContributionImages($contribution, $imageURLs);
+
 
             DB::commit();
             Cache::clear([ContributionCache::GET_KEY, ContributionCache::GET_ALL_KEY]);
