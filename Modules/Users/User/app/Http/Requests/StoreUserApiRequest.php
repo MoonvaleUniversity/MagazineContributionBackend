@@ -28,6 +28,7 @@ class StoreUserApiRequest extends FormRequest
             'email'    => 'required|email|unique:users',
             'password' => 'required|min:6',
             'role'     => ['required', Rule::in(Role::values())],
+            'faculty_id' => 'required|string',
         ];
     }
 }

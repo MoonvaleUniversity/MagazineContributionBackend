@@ -15,4 +15,12 @@ class EmailService implements EmailServiceInterface
                 ->subject($subject);
         });
     }
+
+    public function raw(string $view, string $email, string $subject): void
+    {
+        Mail::raw($view, function ($message) use ($email, $subject) {
+            $message->to($email)
+                ->subject($subject);
+        });
+    }
 }
