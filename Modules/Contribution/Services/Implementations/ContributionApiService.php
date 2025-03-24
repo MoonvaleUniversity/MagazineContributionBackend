@@ -5,6 +5,7 @@ use App\Config\Cache\ContributionCache;
 use App\Facades\Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Modules\AcademicYear\App\Models\AcademicYear;
 use Modules\AcademicYear\Services\AcademicYearApiServiceInterface;
 use Modules\ClosureDate\App\Models\ClosureDate;
@@ -15,8 +16,10 @@ use Modules\Faculty\App\Models\Faculty;
 use Modules\Faculty\Services\FacultyApiServiceInterface;
 use Modules\Shared\Email\EmailServiceInterface;
 use Modules\Shared\FileUpload\FileUploadServiceInterface;
+use Modules\Shared\ZipFile\ZipFileServiceInterface;
 use Modules\Users\User\App\Models\User;
 use Modules\Users\User\Services\UserApiServiceInterface;
+use ZipArchive;
 
 class ContributionApiService implements ContributionApiServiceInterface
 {
@@ -106,6 +109,7 @@ class ContributionApiService implements ContributionApiServiceInterface
 
         try {
             $timer = now()->subMinutes(5);
+            $timer         = now()->subMinutes(5);
             $contributions = Contribution::where('created_at', '<=', $timer)
                 ->get();
 
@@ -113,7 +117,6 @@ class ContributionApiService implements ContributionApiServiceInterface
                 $commentCount = DB::table('comments')
                     ->where('contribution_id', $contribution->id)
                     ->count();
-
                     if ($commentCount == 0) {
                     $user = User::find($contribution->user_id);
                     $marketingCoordinator = $this->userApiService->getAll(
@@ -122,7 +125,15 @@ class ContributionApiService implements ContributionApiServiceInterface
                         ],relations: ['roles'])
                         ->filter(function($user) {
                         return $user->roles->contains('name', 'Marketing Coordinator');})->first();
-
+                if ($commentCount == 0) {
+                    $user                 = User::find($contribution->user_id);
+                    $marketingCoordinator = $this->userApiService->getAll(
+                        conds: [
+                            'faculty_id' => $user->faculty_id,
+                        ], relations: ['roles'])
+                        ->filter(function ($user) {
+                            return $user->roles->contains('name', 'Marketing Coordinator');
+                        })->first();
                     $user = User::find($contribution->user_id);
                     if (! $user) {
                         return apiResponse(false, 'Marketing coordinator not found for this faculty.');
@@ -144,6 +155,63 @@ class ContributionApiService implements ContributionApiServiceInterface
     {
         //write db connection
     }
+
+    public function updatePublish($id)
+    {
+        DB::beginTransaction();
+        try {
+
+            $contribution = Contribution::where('id', $id)->update(['is_selected_for_publication' => 1]);
+            DB::commit();
+            Cache::clear([ContributionCache::GET_KEY, ContributionCache::GET_ALL_KEY]);
+
+            return $contribution;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
+    }
+
+    public function downloadZip($id)
+    {
+        DB::beginTransaction();
+        try {
+            $contribution = Contribution::findOrFail($id);
+
+            if ($contribution->is_selected_for_publication != 1) {
+                return apiResponse(false, 'Contribution not approved for publication. Download not allowed.', [], 404);
+            }
+
+            $relativePath = Str::after($contribution->doc_url, '/storage/');
+            $filePath     = storage_path("app/public/{$relativePath}");
+
+            if (!file_exists($filePath)) {
+                return apiResponse(false, 'File not found.', ['file_path' => $filePath], 404);
+            }
+
+            // Create a temporary zip file
+            $zipFileName = 'Moon_Vale_' . $contribution->name . '.zip';
+            $zipFilePath = storage_path("app/public/{$zipFileName}");
+
+            $zip = new ZipArchive;
+            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+                $zip->addFile($filePath, basename($filePath));
+                $zip->close();
+            } else {
+                return apiResponse(false, 'Could not create zip file.', [], 500);
+            }
+            DB::commit();
+            return response()->download($zipFilePath, $zipFileName, [
+                'Content-Type' => 'application/zip',
+            ])->deleteFileAfterSend(shouldDelete: true);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
 
     public function delete()
     {

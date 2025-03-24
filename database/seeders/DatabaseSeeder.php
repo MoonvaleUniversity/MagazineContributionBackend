@@ -38,28 +38,42 @@ class DatabaseSeeder extends Seeder
             'email' => 'yunbira2412@gmail.com',
         ], [
             'name' => 'Bee Bee',
-            'password' => 'Password',
+            'password' => 'password',
             'faculty_id' => $faculty->id,
             'academic_year_id' => $academicYear->id,
             'email_verified_at' => now()
         ]);
 
         $user = User::where('email', 'yunbira2412@gmail.com')->first();
-        if (!$user->hasRole(Role::STUDENT)) {
-            $user->assignRole(Role::STUDENT);
+        if (!$user->hasRole(Role::STUDENT->label())) {
+            $user->assignRole(Role::STUDENT->label());
         }
 
         $admin = User::firstOrCreate([
             'email' => 'admin@mv.com',
         ], [
             'name' => 'Moonvale Admin',
-            'password' => 'Password',
+            'password' => 'password',
             'email_verified_at' => now(),
         ]);
 
         $admin = User::where('email', 'admin@mv.com')->first();
-        if (!$admin->hasRole(Role::ADMIN)) {
-            $admin->assignRole(Role::ADMIN);
+        if (!$admin->hasRole(Role::ADMIN->label())) {
+            $admin->assignRole(Role::ADMIN->label());
+            
+        }
+
+        $manager = User::firstOrCreate([
+            'email' => 'manager@mv.com',
+        ], [
+            'name' => 'Moonvale Marketing Manager',
+            'password' => 'password',
+            'email_verified_at' => now(),
+        ]);
+
+        $manager = User::where('email', 'manager@mv.com')->first();
+        if (!$manager->hasRole(Role::MARKETING_MANAGER->label())) {
+            $manager->assignRole(Role::MARKETING_MANAGER->label());
         }
     }
 }

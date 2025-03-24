@@ -4,19 +4,19 @@ namespace Modules\Users\Coordinator\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Modules\Users\Admin\Services\AdminApiServiceInterface;
+use Modules\Users\Manager\Services\ManagerApiServiceInterface;
 
 class StoreCoordinatorApiRequest extends FormRequest
 {
-    public function __construct(protected AdminApiServiceInterface $adminApiService) {}
+    public function __construct(protected ManagerApiServiceInterface $managerApiService) {}
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
         $userId = Auth::user()->id;
-        $admin = $this->adminApiService->get($userId);
-        if (!$admin) {
+        $manager = $this->managerApiService->get($userId);
+        if (!$manager) {
             return false;
         }
         return true;

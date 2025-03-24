@@ -27,7 +27,7 @@ class AdminApiService implements AdminApiServiceInterface
     public function create(array $adminData)
     {
         //write db connection
-        $adminData['role'] = Role::ADMIN;
+        $adminData['role'] = Role::ADMIN->value;
         return $this->userApiService->create($adminData);
     }
 

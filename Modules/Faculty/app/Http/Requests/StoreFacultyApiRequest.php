@@ -3,15 +3,24 @@
 namespace Modules\Faculty\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Modules\Users\User\Services\UserApiServiceInterface;
 
 class StoreFacultyApiRequest extends FormRequest
 {
+    public function __construct(protected UserApiServiceInterface $userApiService) {}
+
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        $userId = Auth::user()->id;
+        $user = $this->userApiService->get($userId);
+        if ($user->hasPermissionTo('faculty.create', 'api')) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -23,7 +32,7 @@ class StoreFacultyApiRequest extends FormRequest
     {
         return [
             "name" => "required|string",
-            'image_url' => 'required|url',
+            'image' => 'required|image',
         ];
     }
 }

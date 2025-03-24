@@ -14,11 +14,11 @@ class StoreAdminRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // $userId = Auth::user()->id;
-        // $admin = $this->adminApiService->get($userId);
-        // if (!$admin) {
-        //     return false;
-        // }
+        $userId = Auth::user()->id;
+        $admin = $this->adminApiService->get($userId);
+        if (!$admin) {
+            return false;
+        }
         return true;
     }
 

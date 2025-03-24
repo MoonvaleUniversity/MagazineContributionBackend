@@ -13,7 +13,10 @@ class CoordinatorApiController extends Controller
 {
     protected $coordinatorApiRelations;
 
-    public function __construct(protected CoordinatorApiServiceInterface $coordinatorApiService) {}
+    public function __construct(protected CoordinatorApiServiceInterface $coordinatorApiService)
+    {
+        $this->coordinatorApiRelations = ['images'];
+    }
 
     /**
      * Display a listing of the resource.
@@ -28,7 +31,7 @@ class CoordinatorApiController extends Controller
         $data = [
             'coordinators' => CoordinatorApiResource::collection($coordinators)
         ];
-        return apiResponse(true, 'Data retrived successfully', $data);
+        return apiResponse(true, 'Data retrieved successfully', $data);
     }
 
     /**
@@ -72,9 +75,13 @@ class CoordinatorApiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
-        //
+        $coordinator = $this->coordinatorApiService->delete($id);
+        $data = [
+            'coordinator' => new CoordinatorApiResource($coordinator)
+        ];
+        return apiResponse(true, 'User updated successfully', $data);
     }
 
     ////////////////////////////////////////////////////////////////////

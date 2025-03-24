@@ -15,12 +15,20 @@ use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
 class ContributionApiController extends Controller
 {
     public function __construct(protected ContributionApiServiceInterface $contributionApiService,  protected EmailServiceInterface $emailService, protected UserApiServiceInterface $userApiService) {}
+    protected $contributionApiRelations;
+    public function __construct(protected ContributionApiServiceInterface $contributionApiService,  protected EmailServiceInterface $emailService, protected UserApiServiceInterface $userApiService) {
+      $this->contributionApiRelations = ['images'];
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $contribution = $this->contributionApiService->getAll();
+        [$limit, $offset] = getLimitOffsetFromRequest($request);
+        [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
+        $conds = $this->getFilterConditions($request);
+
+        $contribution = $this->contributionApiService->getAll($this->contributionApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
         $data = [
             'contributions' => $contribution
         ];
@@ -34,7 +42,11 @@ class ContributionApiController extends Controller
     {
         $validatedData = $request->validated();
         $studentUser = $this->userApiService->getEmailById($validatedData['user_id']);
+        $studentEmail = $this->userApiService->getEmailById($validatedData['user_id']);
 
+        if (!$studentEmail) {
+            return apiResponse(false, 'User email not found', [], 400);
+        }
         $contribution = $this->contributionApiService->create($validatedData, $request->file('doc'), $request->file('images'));
         $data = [
             'contributions' => $contribution
@@ -55,7 +67,7 @@ class ContributionApiController extends Controller
         } else {
             return apiResponse(false, 'Marketing coordinator not found for this faculty.');
         }
-
+            $this->emailService->send('submissionEmail', $studentEmail, 'Submission Successful',[]);
         return apiResponse(true, 'Contribution stored successfully', $data);
     }
 
@@ -79,11 +91,42 @@ class ContributionApiController extends Controller
         //
     }
 
+    public function publish(string $id)
+    {
+        $data = $this->contributionApiService->updatePublish($id);
+        return apiResponse(true, 'Contribution was published successfully', $data);
+    }
+
+    public function downloadZipFile(string $id)
+    {
+        $data = $this->contributionApiService->downloadZip($id);
+        return $data;
+    }
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
         //
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    /// Private Functions
+    ////////////////////////////////////////////////////////////////////
+
+    //-------------------------------------------------------------------
+    // Data Preparations
+    //-------------------------------------------------------------------
+    private function getFilterConditions(Request $request)
+    {
+        return [
+            'name' => $request->name,
+            'user_id' => $request->user_id,
+            'user_id@@name' => $request->user_name,
+            'user_id@@academic_year_id' => $request->user_academic_year_id,
+            'closure_date_id' => $request->closure_date_id,
+            'closure_date_id@@academic_year_id' => $request->closure_date_academic_year_id,
+            'is_selected_for_publication' => $request->is_selected_for_publication
+        ];
     }
 }

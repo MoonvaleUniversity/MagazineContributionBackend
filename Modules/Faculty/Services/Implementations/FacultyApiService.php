@@ -9,9 +9,12 @@ use Modules\Faculty\App\Models\Faculty;
 use Modules\Faculty\Services\FacultyApiServiceInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Modules\Shared\FileUpload\FileUploadServiceInterface;
 
 class FacultyApiService implements FacultyApiServiceInterface
 {
+    public function __construct(protected FileUploadServiceInterface $fileUploadService) {}
+
     public function get($id = null, $relations = null, $conds = null)
     {
         //read db connection
@@ -58,11 +61,15 @@ class FacultyApiService implements FacultyApiServiceInterface
         });
     }
 
-    public function create($facultyData)
+    public function create($facultyData, $imageFile)
     {
         //write db connection
         DB::beginTransaction();
         try {
+            //Upload Image File
+            $facultyData[Faculty::image_url] = $this->fileUploadService->singleUpload(config('faculty.upload_path'), $imageFile, ['add_unix_time' => true]);
+
+            //Create Faculty
             $faculty = $this->createFaculty($facultyData);
 
             DB::commit();
@@ -75,11 +82,17 @@ class FacultyApiService implements FacultyApiServiceInterface
         }
     }
 
-    public function update($id, $facultyData)
+    public function update($id, $facultyData, $imageFile = null)
     {
         //write db connection
         DB::beginTransaction();
         try {
+            if ($imageFile) {
+                $faculty = $this->get($id);
+                $this->fileUploadService->delete($faculty[Faculty::image_url]);
+                $facultyData[Faculty::image_url] = $this->fileUploadService->singleUpload(config('faculty.upload_path'), $imageFile, ['add_unix_time' => true]);
+            }
+
             $faculty = $this->updateFaculty($id, $facultyData);
 
             DB::commit();
@@ -97,6 +110,8 @@ class FacultyApiService implements FacultyApiServiceInterface
         //write db connection
         DB::beginTransaction();
         try {
+            $faculty = $this->get($id);
+            $this->fileUploadService->delete($faculty[Faculty::image_url]);
             $name = $this->deleteFaculty($id);
 
             DB::commit();

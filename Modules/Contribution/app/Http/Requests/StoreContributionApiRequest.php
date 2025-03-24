@@ -5,7 +5,7 @@ namespace Modules\Contribution\App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Modules\ClosureDate\Services\ClosureDateApiServiceInterface;
 
-class StoreContributionApiRequest extends FormRequest
+class  StoreContributionApiRequest extends FormRequest
 {
     public function __construct(protected ClosureDateApiServiceInterface $closureDateApiService) {}
 
