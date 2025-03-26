@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Contribution\Services\Implementations;
 
 use App\Config\Cache\ContributionCache;
@@ -24,8 +25,7 @@ use ZipArchive;
 class ContributionApiService implements ContributionApiServiceInterface
 {
     public function __construct(protected FileUploadServiceInterface $fileUploadService, protected AcademicYearApiServiceInterface $academicYearApiService, protected FacultyApiServiceInterface $facultyApiService, protected UserApiServiceInterface $userApiService, protected EmailServiceInterface $emailService) {}
-    public function __construct(protected FileUploadServiceInterface $fileUploadService, protected AcademicYearApiServiceInterface $academicYearApiService, protected FacultyApiServiceInterface $facultyApiService, protected UserApiServiceInterface $userApiService, protected EmailServiceInterface $emailService)
-    {}
+
     public function get($id = null, $relations = null, $conds = null)
     {
         //read db connection
@@ -111,40 +111,43 @@ class ContributionApiService implements ContributionApiServiceInterface
 
         try {
             $timer = now()->subMinutes(5);
-            $timer         = now()->subMinutes(5);
-            $contributions = Contribution::where('created_at', '<=', $timer)
-                ->get();
+            $timer = now()->subMinutes(5);
+            $contributions = Contribution::where('created_at', '<=', $timer)->get();
 
             foreach ($contributions as $contribution) {
                 $commentCount = DB::table('comments')
                     ->where('contribution_id', $contribution->id)
                     ->count();
-                    if ($commentCount == 0) {
+                if ($commentCount == 0) {
                     $user = User::find($contribution->user_id);
                     $marketingCoordinator = $this->userApiService->getAll(
                         conds: [
                             'faculty_id' => $user->faculty_id
-                        ],relations: ['roles'])
-                        ->filter(function($user) {
-                        return $user->roles->contains('name', 'Marketing Coordinator');})->first();
-                if ($commentCount == 0) {
-                    $user                 = User::find($contribution->user_id);
-                    $marketingCoordinator = $this->userApiService->getAll(
-                        conds: [
-                            'faculty_id' => $user->faculty_id,
-                        ], relations: ['roles'])
+                        ],
+                        relations: ['roles']
+                    )
                         ->filter(function ($user) {
                             return $user->roles->contains('name', 'Marketing Coordinator');
                         })->first();
-                    $user = User::find($contribution->user_id);
-                    if (! $user) {
-                        return apiResponse(false, 'Marketing coordinator not found for this faculty.');
+                    if ($commentCount == 0) {
+                        $user                 = User::find($contribution->user_id);
+                        $marketingCoordinator = $this->userApiService->getAll(
+                            conds: [
+                                'faculty_id' => $user->faculty_id,
+                            ],
+                            relations: ['roles']
+                        )
+                            ->filter(function ($user) {
+                                return $user->roles->contains('name', 'Marketing Coordinator');
+                            })->first();
+                        $user = User::find($contribution->user_id);
+                        if (! $user) {
+                            return apiResponse(false, 'Marketing coordinator not found for this faculty.');
+                        }
+                        $this->emailService->send('reminder-email', $marketingCoordinator->email, 'Your contribution has not received any comments.', ['contribution' => $contribution]);
                     }
-
-                    $this->emailService->send('reminder-email', $marketingCoordinator->email, 'Your contribution has not received any comments.', ['contribution' => $contribution]);
                 }
             }
-
             DB::commit();
             Cache::clear([ContributionCache::GET_KEY, ContributionCache::GET_ALL_KEY]);
         } catch (\Throwable $e) {
@@ -172,7 +175,6 @@ class ContributionApiService implements ContributionApiServiceInterface
             DB::rollBack();
             throw $e;
         }
-
     }
 
     public function downloadZip($id)
@@ -207,7 +209,6 @@ class ContributionApiService implements ContributionApiServiceInterface
             return response()->download($zipFilePath, $zipFileName, [
                 'Content-Type' => 'application/zip',
             ])->deleteFileAfterSend(shouldDelete: true);
-
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
