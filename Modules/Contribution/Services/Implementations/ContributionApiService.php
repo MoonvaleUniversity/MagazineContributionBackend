@@ -64,7 +64,12 @@ class ContributionApiService implements ContributionApiServiceInterface
                 })
                 ->when($conds, function ($q, $conds) {
                     $this->searching($q, $conds);
-                });
+                })
+                ->whereNotIn('id', function ($query) {
+            $query->select('contribution_id')
+                ->from('comments')
+                ->where('created_at', '>=', now()->subDays(14)); // Contributions that got a comment in the last 14 days
+        });
 
             $contributions = (! $noPagination || $pagPerPage) ? $contributions->paginate($pagPerPage) : $contributions->get();
 
@@ -184,7 +189,7 @@ class ContributionApiService implements ContributionApiServiceInterface
             }
 
             // Create a temporary zip file
-            $zipFileName = 'Moon_Vale_' . $contribution->name . '.zip';
+            $zipFileName = 'MV_UNI_' . $contribution->name . '.zip';
             $zipFilePath = storage_path("app/public/{$zipFileName}");
 
             $zip = new ZipArchive;

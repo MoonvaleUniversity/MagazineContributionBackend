@@ -55,7 +55,7 @@ class ContributionApiController extends Controller
      */
     public function show(string $id)
     {
-        //
+
     }
 
     public function emailAuto()
