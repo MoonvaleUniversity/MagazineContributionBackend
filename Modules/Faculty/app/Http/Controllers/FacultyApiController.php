@@ -62,7 +62,7 @@ class FacultyApiController extends Controller
 
     /**
      * Update the specified resource in storage.
-     */
+     */ 
     public function update(UpdateFacultyApiRequest $request, string $id)
     {
         $validatedData = $request->validated();
