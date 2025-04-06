@@ -49,7 +49,7 @@ interface ContributionApiServiceInterface
 
     public function downloadZip($id);
 
-    public function delete();
+    public function delete($id);
 
     public function automatic();
 }

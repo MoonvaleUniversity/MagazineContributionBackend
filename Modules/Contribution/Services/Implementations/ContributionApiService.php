@@ -218,9 +218,24 @@ class ContributionApiService implements ContributionApiServiceInterface
     }
 
 
-    public function delete()
+    public function delete($id)
     {
         //write db connection
+        DB::beginTransaction();
+        try {
+            $imageUrls = $this->deleteContributionImages($id);
+            [$name, $docUrl] = $this->deleteContribution($id);
+            Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY]);
+            DB::commit();
+            foreach ($imageUrls as $url) {
+                $this->fileUploadService->delete($url);
+            }
+            $this->fileUploadService->delete($docUrl);
+            return $name;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     ////////////////////////////////////////////////////////////////////
@@ -243,6 +258,24 @@ class ContributionApiService implements ContributionApiServiceInterface
     {
         $imageRecords = array_map(fn($url) => [ContributionImage::image_url => $url], $imageURLs);
         $contribution->images()->createMany($imageRecords);
+    }
+
+    private function deleteContribution($id)
+    {
+        $contribution = $this->get($id);
+        $name = $contribution->name;
+        $docUrl = $contribution->doc_url;
+        $contribution->delete();
+
+        return [$name, $docUrl];
+    }
+
+    private function deleteContributionImages($id)
+    {
+        $contribution = $this->get($id, ['images']);
+        $imageUrls = $contribution->images->pluck('image_url');
+        $contribution->images()->delete();
+        return $imageUrls;
     }
 
     private function searching(Builder $query, $conds)

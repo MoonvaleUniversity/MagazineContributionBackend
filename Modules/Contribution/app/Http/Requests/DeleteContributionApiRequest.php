@@ -1,21 +1,25 @@
 <?php
 
-namespace Modules\Users\User\App\Http\Requests;
+namespace Modules\Contribution\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Modules\Users\User\Services\UserApiServiceInterface;
 
-class UpdateUserApiRequest extends FormRequest
+class DeleteContributionApiRequest extends FormRequest
 {
+    public function __construct(protected UserApiServiceInterface $userApiService) {}
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
         $userId = Auth::user()->id;
-        $requestedId = $this->route('user');
-
-        return $userId == $requestedId;
+        $user = $this->userApiService->get($userId);
+        if ($user->hasPermissionTo('contribution.delete', 'api')) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -25,9 +29,6 @@ class UpdateUserApiRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => 'required',
-            'password' => 'nullable|confirmed'
-        ];
+        return [];
     }
 }
