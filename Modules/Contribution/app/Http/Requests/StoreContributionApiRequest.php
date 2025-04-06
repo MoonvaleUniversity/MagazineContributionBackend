@@ -3,17 +3,25 @@
 namespace Modules\Contribution\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Modules\ClosureDate\Services\ClosureDateApiServiceInterface;
+use Modules\Users\User\Services\UserApiServiceInterface;
 
 class  StoreContributionApiRequest extends FormRequest
 {
-    public function __construct(protected ClosureDateApiServiceInterface $closureDateApiService) {}
+    public function __construct(protected ClosureDateApiServiceInterface $closureDateApiService, protected UserApiServiceInterface $userApiService) {}
 
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
+        $userId = Auth::user()->id;
+        $user = $this->userApiService->get($userId);
+        if (!$user->hasPermissionTo('contribution.create', 'api')) {
+            return false;
+        }
+
         $closureDateId = $this->input('closure_date_id');
 
         if (!$closureDateId) {
