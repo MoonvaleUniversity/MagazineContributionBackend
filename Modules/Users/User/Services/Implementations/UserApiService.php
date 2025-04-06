@@ -114,22 +114,6 @@ class UserApiService implements UserApiServiceInterface
         }
     }
 
-    public function getEmailById($id)
-    {
-        DB::beginTransaction();
-        //write db connection
-        try {
-            $email =DB::table('users')->where('id', $id)->value('email');
-            DB::commit();
-            Cache::clear([UserCache::GET_ALL_KEY, UserCache::GET_KEY]);
-
-            return $email;
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            throw $e;
-        }
-
-    }
     ////////////////////////////////////////////////////////////////////
     /// Private Functions
     ////////////////////////////////////////////////////////////////////

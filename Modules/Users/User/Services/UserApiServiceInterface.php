@@ -45,6 +45,4 @@ interface UserApiServiceInterface
     public function update($id, $userData);
 
     public function delete($id);
-
-    public function getEmailById($id);
 }
