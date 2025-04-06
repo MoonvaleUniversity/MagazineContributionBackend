@@ -5,6 +5,8 @@ namespace Modules\Contribution\App\Http\Controllers;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Modules\Contribution\App\Http\Requests\DeleteContributionApiRequest;
 use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
 use Modules\Contribution\App\Http\Requests\ViewContributionApiRequest;
 use Modules\Contribution\Services\ContributionApiServiceInterface;
@@ -54,6 +56,11 @@ class ContributionApiController extends Controller
             return apiResponse(false, 'Marketing coordinator not found for this faculty.');
         }
 
+        $contribution = $this->contributionApiService->get(conds: ['user_id' => $validatedData['user_id'], 'name' => $validatedData['name']]);
+        if ($contribution) {
+            return apiResponse(false, 'You already created this contribution.', statusCode: 403, errors: ['contribution' => 'You already created thi contribution.']);
+        }
+
         $contribution = $this->contributionApiService->create($validatedData, $request->file('doc'), $request->file('images'));
         $data         = [
             'contributions' => $contribution,
@@ -71,6 +78,9 @@ class ContributionApiController extends Controller
     public function show(ViewContributionApiRequest $request, $id)
     {
         $contribution = $this->contributionApiService->get($id, relations: $this->contributionApiRelations);
+        if (!$contribution) {
+            return apiResponse(false, 'Contribution not found', [], 404, ['contribution' => 'Contribution not found']);
+        }
         $data = [
             'contributions' => $contribution
         ];
@@ -103,9 +113,17 @@ class ContributionApiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(DeleteContributionApiRequest $request, string $id)
     {
-        //
+        $contribution = $this->contributionApiService->get($id, relations: $this->contributionApiRelations);
+        $user = Auth::user();
+        if (!$contribution) {
+            return apiResponse(false, 'Contribution not found', [], 404, ['contribution' => 'Contribution not found']);
+        }
+        $name = $this->contributionApiService->delete($id);
+        $this->emailService->send('delete-contribution-email', $contribution->user->email, 'Submission Deleted', ['user' => $user, 'contributionName' => $name]);
+
+        return apiResponse(true, 'Contribution was deleted successfully', ['name' => $name]);
     }
 
     ////////////////////////////////////////////////////////////////////
