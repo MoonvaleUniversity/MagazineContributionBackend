@@ -3,6 +3,7 @@
 namespace Modules\Users\User\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateUserApiRequest extends FormRequest
 {
@@ -11,7 +12,10 @@ class UpdateUserApiRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $userId = Auth::user()->id;
+        $requestedId = $this->route('user');
+
+        return $userId == $requestedId;
     }
 
     /**
@@ -22,7 +26,8 @@ class UpdateUserApiRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required',
+            'password' => 'nullable|confirmed'
         ];
     }
 }

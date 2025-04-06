@@ -61,7 +61,8 @@ class UserApiController extends Controller
      */
     public function update(UpdateUserApiRequest $request, string $id)
     {
-        $user = $this->userApiService->update($id, $request->only('name'));
+        $validatedData = $request->validated();
+        $user = $this->userApiService->update($id, $validatedData);
         $data = [
             'user' => new UserApiResource($user)
         ];

@@ -85,7 +85,7 @@ class UserApiService implements UserApiServiceInterface
         DB::beginTransaction();
         try {
             $user = $this->updateUser($id, $userData);
-            if ($userData['role']) {
+            if (isset($userData['role'])) {
                 $this->updateRole($user, $userData['role']);
             }
 
