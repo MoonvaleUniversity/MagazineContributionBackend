@@ -53,9 +53,11 @@ class UserApiService implements UserApiServiceInterface
                     $this->searching($q, $conds);
                 });
 
-            $users = (!$noPagination || $pagPerPage) ? $users->paginate($pagPerPage) : $users->get();
-
-            return $users;
+            if (($noPagination !== null && !$noPagination) || $pagPerPage) {
+                return $users->paginate($pagPerPage ?? config('constants.pagPerPage'));
+            } else {
+                return $users->get();
+            }
         });
     }
 

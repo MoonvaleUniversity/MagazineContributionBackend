@@ -52,9 +52,11 @@ class AcademicYearApiService implements AcademicYearApiServiceInterface
                     $this->searching($q, $conds);
                 });
 
-            $academicYears = (!$noPagination || $pagPerPage) ? $academicYears->paginate($pagPerPage) : $academicYears->get();
-
-            return $academicYears;
+            if (($noPagination !== null && !$noPagination) || $pagPerPage) {
+                return $academicYears->paginate($pagPerPage ?? config('constants.pagPerPage'));
+            } else {
+                return $academicYears->get();
+            }
         });
     }
 

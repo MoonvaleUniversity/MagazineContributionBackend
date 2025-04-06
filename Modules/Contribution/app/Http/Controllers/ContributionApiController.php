@@ -6,6 +6,7 @@ use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
+use Modules\Contribution\App\Http\Requests\ViewContributionApiRequest;
 use Modules\Contribution\Services\ContributionApiServiceInterface;
 use Modules\Shared\Email\EmailServiceInterface;
 use Modules\Users\User\Services\UserApiServiceInterface;
@@ -15,7 +16,7 @@ class ContributionApiController extends Controller
     protected $contributionApiRelations;
     public function __construct(protected ContributionApiServiceInterface $contributionApiService, protected UserApiServiceInterface $userApiService, protected EmailServiceInterface $emailService)
     {
-        $this->contributionApiRelations = ['images'];
+        $this->contributionApiRelations = ['images', 'user', 'user.faculty'];
     }
     /**
      * Display a listing of the resource.
@@ -67,9 +68,13 @@ class ContributionApiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(ViewContributionApiRequest $request, $id)
     {
-        //
+        $contribution = $this->contributionApiService->get($id, relations: $this->contributionApiRelations);
+        $data = [
+            'contributions' => $contribution
+        ];
+        return apiResponse(true, "Show data successfully", $data);
     }
 
     public function emailAuto()

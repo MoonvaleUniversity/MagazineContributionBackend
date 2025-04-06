@@ -22,7 +22,7 @@ if (!function_exists('getLimitOffsetFromRequest')) {
     function getLimitOffsetFromRequest(Request $request)
     {
         $offset = $request->offset;
-        $limit = $request->limit ?? 10;
+        $limit = $request->limit;
         return [$limit, $offset];
     }
 }
