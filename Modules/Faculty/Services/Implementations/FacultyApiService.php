@@ -55,9 +55,11 @@ class FacultyApiService implements FacultyApiServiceInterface
                     $this->searching($q, $conds);
                 });
 
-            $faculties = (!$noPagination || $pagPerPage) ? $faculties->paginate($pagPerPage) : $faculties->get();
-
-            return $faculties;
+            if (($noPagination !== null && !$noPagination) || $pagPerPage) {
+                return $faculties->paginate($pagPerPage ?? config('constants.pagPerPage'));
+            } else {
+                return $faculties->get();
+            }
         });
     }
 

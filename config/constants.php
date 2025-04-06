@@ -18,5 +18,5 @@ return [
     ],
 
     // Other system-wide constants
-
+    'pagPerPage' => 5
 ];

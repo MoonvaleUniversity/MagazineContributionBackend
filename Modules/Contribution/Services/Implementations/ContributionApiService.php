@@ -66,9 +66,11 @@ class ContributionApiService implements ContributionApiServiceInterface
                     $this->searching($q, $conds);
                 });
 
-            $contributions = (! $noPagination || $pagPerPage) ? $contributions->paginate($pagPerPage) : $contributions->get();
-
-            return $contributions;
+            if (($noPagination !== null && !$noPagination) || $pagPerPage) {
+                return $contributions->paginate($pagPerPage ?? config('constants.pagPerPage'));
+            } else {
+                return $contributions->get();
+            }
         });
     }
 
