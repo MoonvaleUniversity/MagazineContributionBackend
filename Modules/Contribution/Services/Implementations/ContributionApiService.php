@@ -158,17 +158,13 @@ class ContributionApiService implements ContributionApiServiceInterface
         }
     }
 
-    public function update()
+    public function update($id, $contributionData)
     {
         //write db connection
-    }
-
-    public function updatePublish($id)
-    {
         DB::beginTransaction();
         try {
+            $contribution = $this->updateContribution($id, $contributionData);
 
-            $contribution = Contribution::where('id', $id)->update(['is_selected_for_publication' => 1]);
             DB::commit();
             Cache::clear([ContributionCache::GET_KEY, ContributionCache::GET_ALL_KEY]);
 
@@ -258,6 +254,14 @@ class ContributionApiService implements ContributionApiServiceInterface
     {
         $imageRecords = array_map(fn($url) => [ContributionImage::image_url => $url], $imageURLs);
         $contribution->images()->createMany($imageRecords);
+    }
+
+    private function updateContribution($id, $contributionData)
+    {
+        $contribution = $this->get($id);
+        $contribution->update($contributionData);
+
+        return $contribution;
     }
 
     private function deleteContribution($id)

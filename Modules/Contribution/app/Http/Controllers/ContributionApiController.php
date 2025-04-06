@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Contribution\App\Http\Requests\DeleteContributionApiRequest;
+use Modules\Contribution\App\Http\Requests\PublishContributionApiRequest;
 use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
 use Modules\Contribution\App\Http\Requests\ViewContributionApiRequest;
 use Modules\Contribution\Services\ContributionApiServiceInterface;
@@ -99,10 +100,16 @@ class ContributionApiController extends Controller
         //
     }
 
-    public function publish(string $id)
+    public function publish(PublishContributionApiRequest $request, string $id)
     {
-        $data = $this->contributionApiService->updatePublish($id);
-        return apiResponse(true, 'Contribution was published successfully', $data);
+        $validatedData = $request->validated();
+        $coordinator = $this->userApiService->get(Auth::id());
+        $contribution = $this->contributionApiService->update($id, ['is_selected_for_publication' => 1]);
+        $student = $this->userApiService->get($contribution->user_id);
+
+        $this->emailService->send('publish-contribution-email', $student->email, 'Contribution selected for Publication', ['coordinator' => $coordinator, 'comment' => $validatedData['comment'], 'contribution' => $contribution]);
+
+        return apiResponse(true, 'Contribution was published successfully', ['contribution' => $contribution]);
     }
 
     public function downloadZipFile(string $id)

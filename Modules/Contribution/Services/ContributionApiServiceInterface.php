@@ -43,9 +43,7 @@ interface ContributionApiServiceInterface
 
     public function create($contributionData, $wordFile, $imageFiles);
 
-    public function update();
-
-    public function updatePublish($id);
+    public function update($id, $contributionData);
 
     public function downloadZip($id);
 
