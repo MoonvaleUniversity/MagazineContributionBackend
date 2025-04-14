@@ -33,20 +33,27 @@ class ContributionApiController extends Controller
     public function store(StoreContributionApiRequest $request)
     {
         $validatedData = $request->validated();
-        $studentEmail = $this->userApiService->getEmailById($validatedData['user_id']);
-
-        if (!$studentEmail) {
-            return apiResponse(false, 'User email not found', [], 400);
-        }
+        $studentUser     = $this->userApiService->get($validatedData['user_id']);
 
         $contribution = $this->contributionApiService->create($validatedData, $request->file('doc'), $request->file('images'));
-        $data = [
-            'contributions' => $contribution
+        $data         = [
+            'contributions' => $contribution,
         ];
 
-        //Email Sent When Contribution Is Upload
-            $this->emailService->send('submissionEmail', $studentEmail, 'Submission Successful',[]);
+        $marketingCoordinator = $this->userApiService->getAll(
+            conds: [
+                'faculty_id' => $studentUser->faculty_id
+            ],relations: ['roles'])
+            ->filter(function($user) {
+            return $user->roles->contains('name', 'Marketing Coordinator');})->first();
 
+        if ($marketingCoordinator) {
+            // dd($marketingCoordinator->email);
+            $this->emailService->send('submissionEmail', $marketingCoordinator->email,'Student`s contributions submission',['student'=>$studentUser]);
+
+        } else {
+            return apiResponse(false, 'Marketing coordinator not found for this faculty.');
+        }
         return apiResponse(true, 'Contribution stored successfully', $data);
     }
 
