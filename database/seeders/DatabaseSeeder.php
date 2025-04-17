@@ -60,7 +60,6 @@ class DatabaseSeeder extends Seeder
         $admin = User::where('email', 'admin@mv.com')->first();
         if (!$admin->hasRole(Role::ADMIN->label())) {
             $admin->assignRole(Role::ADMIN->label());
-            
         }
 
         $manager = User::firstOrCreate([
@@ -75,12 +74,13 @@ class DatabaseSeeder extends Seeder
         if (!$manager->hasRole(Role::MARKETING_MANAGER->label())) {
             $manager->assignRole(Role::MARKETING_MANAGER->label());
         }
+
         $coordinator = User::firstOrCreate([
-            'email' => 'coordinator@mv.com',
+            'email' => 'coordinator@mv.com'
         ], [
             'name' => 'Moonvale Marketing Coordinator',
             'password' => 'password',
-            'email_verified_at' => now(),
+            'email_verified_at' => now()
         ]);
 
         $coordinator = User::where('email', 'coordinator@mv.com')->first();

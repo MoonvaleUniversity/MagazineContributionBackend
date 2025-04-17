@@ -16,6 +16,7 @@ use Modules\Contribution\Services\ContributionApiServiceInterface;
 use Modules\Faculty\App\Models\Faculty;
 use Modules\Faculty\Services\FacultyApiServiceInterface;
 use Modules\Shared\Email\EmailServiceInterface;
+use Modules\Shared\FileManagementService\Services\FileManagementApiServiceInterface;
 use Modules\Shared\FileUpload\FileUploadServiceInterface;
 use Modules\Shared\ZipFile\ZipFileServiceInterface;
 use Modules\Users\User\App\Models\User;
@@ -24,7 +25,14 @@ use ZipArchive;
 
 class ContributionApiService implements ContributionApiServiceInterface
 {
-    public function __construct(protected FileUploadServiceInterface $fileUploadService, protected AcademicYearApiServiceInterface $academicYearApiService, protected FacultyApiServiceInterface $facultyApiService, protected UserApiServiceInterface $userApiService, protected EmailServiceInterface $emailService) {}
+    public function __construct(
+        protected FileUploadServiceInterface $fileUploadService,
+        protected AcademicYearApiServiceInterface $academicYearApiService,
+        protected FacultyApiServiceInterface $facultyApiService,
+        protected UserApiServiceInterface $userApiService,
+        protected EmailServiceInterface $emailService,
+        protected FileManagementApiServiceInterface $fileManagementApiService
+    ) {}
 
     public function get($id = null, $relations = null, $conds = null)
     {
@@ -87,13 +95,13 @@ class ContributionApiService implements ContributionApiServiceInterface
             $faculty      = $this->facultyApiService->get(conds: ['student_id@@id' => $contributionData['user_id']]);
             $student      = $this->userApiService->get($contributionData['user_id']);
             //Upload Word File
-            $contributionData[Contribution::doc_url] = $this->fileUploadService->singleUpload($uploadPath, $wordFile, ['add_unix_time' => true]);
+            $contributionData[Contribution::doc_url] = $this->fileManagementApiService->singleUpload($uploadPath, $wordFile);
 
             //Create Contribution
             $contribution = $this->createContribution($contributionData);
 
             //Upload Images File
-            $imageURLs = $this->fileUploadService->multiUpload($uploadPath, $imageFiles);
+            $imageURLs = $this->fileManagementApiService->multiUpload($uploadPath, $imageFiles);
             $this->createContributionImages($contribution, $imageURLs);
 
 
