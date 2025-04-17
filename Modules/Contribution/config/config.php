@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'upload_path' => 'upload/contributions/',
+    'upload_path' => '/',
 ];
