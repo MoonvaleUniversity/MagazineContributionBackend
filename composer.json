@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "cyrildewit/eloquent-viewable": "^7.0",
         "intervention/image": "^3.11",
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.0",
@@ -14,6 +15,7 @@
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
         "predis/predis": "^2.3",
+        "pusher/pusher-php-server": "^7.2",
         "spatie/laravel-permission": "^6.16",
         "stechstudio/laravel-zipstream": "^5.3",
         "symfony/mailer": "^7.2"

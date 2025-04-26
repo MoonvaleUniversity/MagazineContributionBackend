@@ -35,19 +35,65 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user = User::firstOrCreate([
-            'email' => 'yunbira2412@gmail.com',
+            'email' => 'shn@gmail.com',
         ], [
-            'name' => 'Bee Bee',
+            'name' => 'Shine',
             'password' => 'password',
             'faculty_id' => $faculty->id,
             'academic_year_id' => $academicYear->id,
             'email_verified_at' => now()
         ]);
 
-        $user = User::where('email', 'yunbira2412@gmail.com')->first();
+        $user = User::where('email', 'shn@gmail.com')->first();
         if (!$user->hasRole(Role::STUDENT->label())) {
             $user->assignRole(Role::STUDENT->label());
         }
+
+        $user = User::firstOrCreate([
+            'email' => 'nyein@gmail.com',
+        ], [
+            'name' => 'Shine',
+            'password' => 'password',
+            'faculty_id' => $faculty->id,
+            'academic_year_id' => $academicYear->id,
+            'email_verified_at' => now()
+        ]);
+
+        $user = User::where('email', 'nyein@gmail.com')->first();
+        if (!$user->hasRole(Role::STUDENT->label())) {
+            $user->assignRole(Role::STUDENT->label());
+        }
+
+        $user = User::firstOrCreate([
+            'email' => 'kyaw@gmail.com',
+        ], [
+            'name' => 'Kyaw',
+            'password' => 'password',
+            'faculty_id' => $faculty->id,
+            'academic_year_id' => $academicYear->id,
+            'email_verified_at' => now()
+        ]);
+
+        $user = User::where('email', 'kyaw@gmail.com')->first();
+        if (!$user->hasRole(Role::STUDENT->label())) {
+            $user->assignRole(Role::STUDENT->label());
+        }
+
+        $user = User::firstOrCreate([
+            'email' => 'hay@gmail.com',
+        ], [
+            'name' => 'Htet',
+            'password' => 'password',
+            'faculty_id' => $faculty->id,
+            'academic_year_id' => $academicYear->id,
+            'email_verified_at' => now()
+        ]);
+
+        $user = User::where('email', 'hay@gmail.com')->first();
+        if (!$user->hasRole(Role::STUDENT->label())) {
+            $user->assignRole(Role::STUDENT->label());
+        }
+
 
         $admin = User::firstOrCreate([
             'email' => 'admin@mv.com',
@@ -60,7 +106,7 @@ class DatabaseSeeder extends Seeder
         $admin = User::where('email', 'admin@mv.com')->first();
         if (!$admin->hasRole(Role::ADMIN->label())) {
             $admin->assignRole(Role::ADMIN->label());
-            
+
         }
 
         $manager = User::firstOrCreate([

@@ -24,8 +24,6 @@ use ZipArchive;
 class ContributionApiService implements ContributionApiServiceInterface
 {
     public function __construct(protected FileUploadServiceInterface $fileUploadService, protected AcademicYearApiServiceInterface $academicYearApiService, protected FacultyApiServiceInterface $facultyApiService, protected UserApiServiceInterface $userApiService, protected EmailServiceInterface $emailService) {}
-    public function __construct(protected FileUploadServiceInterface $fileUploadService, protected AcademicYearApiServiceInterface $academicYearApiService, protected FacultyApiServiceInterface $facultyApiService, protected UserApiServiceInterface $userApiService, protected EmailServiceInterface $emailService)
-    {}
     public function get($id = null, $relations = null, $conds = null)
     {
         //read db connection
@@ -112,9 +110,7 @@ class ContributionApiService implements ContributionApiServiceInterface
         try {
             $timer = now()->subMinutes(5);
             $timer         = now()->subMinutes(5);
-            $contributions = Contribution::where('created_at', '<=', $timer)
-                ->get();
-
+            $contributions = Contribution::where('created_at', '<=', $timer)->get();
             foreach ($contributions as $contribution) {
                 $commentCount = DB::table('comments')
                     ->where('contribution_id', $contribution->id)
@@ -147,11 +143,12 @@ class ContributionApiService implements ContributionApiServiceInterface
 
             DB::commit();
             Cache::clear([ContributionCache::GET_KEY, ContributionCache::GET_ALL_KEY]);
-        } catch (\Throwable $e) {
+        }
+        }catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
-        }
     }
+}
 
     public function update()
     {
@@ -302,3 +299,4 @@ class ContributionApiService implements ContributionApiServiceInterface
         return preg_replace('/[^a-zA-Z0-9_-]/', '_', $name); // replace invalid characters
     }
 }
+
