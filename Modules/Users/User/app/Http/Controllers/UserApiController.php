@@ -74,9 +74,9 @@ class UserApiController extends Controller
      */
     public function destroy(string $id)
     {
-        $user = $this->userApiService->delete($id);
+        $name = $this->userApiService->delete($id);
         $data = [
-            'user' => new UserApiResource($user)
+            'name' => $name
         ];
         return apiResponse(true, 'User deleted successfully', $data);
     }

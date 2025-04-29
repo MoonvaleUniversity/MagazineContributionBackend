@@ -104,6 +104,7 @@ class UserApiService implements UserApiServiceInterface
         //write db connection
         DB::beginTransaction();
         try {
+            $this->removeForeignTableData($id);
             $name = $this->deleteUser($id);
 
             DB::commit();
@@ -148,6 +149,15 @@ class UserApiService implements UserApiServiceInterface
         $user->delete();
 
         return $name;
+    }
+
+    private function removeForeignTableData($id)
+    {
+        $user = $this->get($id);
+        $user->saved_articles()->detach();
+        $user->saved_contributions()->detach();
+        $user->contribution_comments()->detach();
+        $user->contribution_votes()->detach();
     }
 
     private function searching(Builder $query, $conds)
