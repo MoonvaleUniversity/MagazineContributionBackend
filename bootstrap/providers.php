@@ -15,5 +15,6 @@ return [
     Modules\Users\Manager\App\Providers\ManagerServiceProvier::class,
     Modules\Users\Student\App\Providers\StudentServiceProvier::class,
     Modules\Users\User\App\Providers\UserServiceProvier::class,
-    Modules\Shared\FileManagementService\App\Providers\FileManagementServiceProvider::class
+    Modules\Shared\FileManagementService\App\Providers\FileManagementServiceProvider::class,
+    Modules\CreativeSpark\App\Providers\CreativeSparkServiceProvider::class,
 ];
