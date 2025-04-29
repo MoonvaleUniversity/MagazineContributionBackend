@@ -12,3 +12,4 @@ Route::post('/contributions/{contribution}/delete-comment', [ContributionApiCont
 Route::post('contributions/{contribution}/get-comment', [ContributionApiController::class, 'getComment'])->middleware('auth');
 Route::post('/contributions/{contribution}/vote', [ContributionApiController::class, 'voteContribution'])->middleware('auth');
 Route::post('/contributions/{contribution}/save', [ContributionApiController::class, 'saveContribution'])->middleware('auth');
+Route::post('/contributions/{contribution}/review', [ContributionApiController::class, 'reviewContribution'])->middleware('auth');

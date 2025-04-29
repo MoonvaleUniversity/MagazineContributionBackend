@@ -27,7 +27,9 @@ return [
 
         'contribution' => [
             'common-actions' => true,
-            'actions' => [],
+            'actions' => [
+                'review',
+            ],
         ],
 
         'faculty' => [
@@ -82,6 +84,7 @@ return [
                 'contribution.create',
                 'contribution.edit',
                 'contribution.delete',
+                'contribution.review',
                 'faculty.view',
                 'faculty.create',
                 'faculty.edit',
@@ -152,6 +155,7 @@ return [
                 'contribution.view',
                 'contribution.edit',
                 'contribution.delete',
+                'contribution.review',
                 'faculty.view',
                 'student.view',
                 'student.create',

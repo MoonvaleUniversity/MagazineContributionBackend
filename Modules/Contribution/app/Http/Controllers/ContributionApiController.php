@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Contribution\App\Http\Requests\DeleteContributionApiRequest;
+use Modules\Contribution\App\Http\Requests\ReviewContributionApiRequest;
 use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
 use Modules\Contribution\App\Http\Requests\ViewContributionApiRequest;
 use Modules\Contribution\Services\ContributionApiServiceInterface;
@@ -199,6 +200,24 @@ class ContributionApiController extends Controller
         ];
 
         return apiResponse(true, "Contribution saved successfully", $data);
+    }
+
+    public function reviewContribution(ReviewContributionApiRequest $request, string $id)
+    {
+        $validatedData = $request->validated();
+
+        $contribution = $this->contributionApiService->get($id);
+        $studentUser = $this->userApiService->get($contribution->user_id);
+        $marketingCoordinator = $this->userApiService->get(
+            conds: [
+                'faculty_id' => $studentUser->faculty_id,
+                'role' => Role::MARKETING_COORDINATOR->label()
+            ]
+        );
+
+        $this->emailService->send('submissionReview', $studentUser->email, 'Student`s contributions submission review', ['contribution' => $contribution, 'marketing_coordinator' => $marketingCoordinator, 'review' => $validatedData['review']]);
+
+        return apiResponse(true, 'Contribution review sent successfully');
     }
 
     ////////////////////////////////////////////////////////////////////
