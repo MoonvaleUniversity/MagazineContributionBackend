@@ -131,8 +131,9 @@ class ContributionApiController extends Controller
         $validatedData = $request->validate([
             'content' => 'required'
         ]);
+        $userId = Auth::user()->id;
 
-        $contribution = $this->contributionApiService->comment($id, $validatedData['content']);
+        $contribution = $this->contributionApiService->comment($id, $userId, $validatedData['content']);
 
         $data = [
             'contributions' => $contribution
@@ -158,14 +159,30 @@ class ContributionApiController extends Controller
     {
         $userId = Auth::user()->id;
 
-        $contribution = $this->contributionApiService->get($id, 'user_comments');
+        $contribution = $this->contributionApiService->get($id);
 
         $comment = $contribution->user_comments()
-        ->wherePivot('user_id', $userId)
-        ->first()?->pivot;
+            ->wherePivot('user_id', $userId)
+            ->first()?->pivot;
 
         $data = [
             'comment' =>   $comment
+        ];
+
+        return apiResponse(true, "Comment fetched successfully", $data);
+    }
+
+    public function voteContribution(Request $request, string $id)
+    {
+        $validatedData = $request->validate([
+            'type' => 'required|in:upvote,downvote'
+        ]);
+        $userId = Auth::user()->id;
+
+        $contribution = $this->contributionApiService->vote($id, $userId, $validatedData['type']);
+
+        $data = [
+            'contributions' => $contribution
         ];
 
         return apiResponse(true, "Comment fetched successfully", $data);

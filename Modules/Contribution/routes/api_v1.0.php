@@ -7,6 +7,7 @@ Route::apiResource('contributions', ContributionApiController::class)->middlewar
 Route::get('/emailAuto', [ContributionApiController::class, 'emailAuto']);
 Route::post('/published/{id}', [ContributionApiController::class, 'publish']);
 Route::post('/download/{id}', [ContributionApiController::class, 'downloadZipFile']);
-Route::post('/comment/{contribution}', [ContributionApiController::class, 'comment'])->middleware('auth');
-Route::post('/delete-comment/{contribution}', [ContributionApiController::class, 'deleteComment'])->middleware('auth');
-Route::post('/get-comment/{contribution}', [ContributionApiController::class, 'getComment'])->middleware('auth');
+Route::post('/contributions/{contribution}/comment', [ContributionApiController::class, 'comment'])->middleware('auth');
+Route::post('/contributions/{contribution}/delete-comment', [ContributionApiController::class, 'deleteComment'])->middleware('auth');
+Route::post('contributions/{contribution}/get-comment', [ContributionApiController::class, 'getComment'])->middleware('auth');
+Route::post('/contributions/{contribution}/vote', [ContributionApiController::class, 'voteContribution'])->middleware('auth');
