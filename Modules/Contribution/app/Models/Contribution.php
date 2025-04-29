@@ -30,12 +30,12 @@ class Contribution extends Model
 
     public function user_comments()
     {
-        return $this->belongsToMany(User::class, 'comments', 'contribution_id', self::user_id);
+        return $this->belongsToMany(User::class, 'comments', 'contribution_id', self::user_id)->withPivot(['content', 'created_at', 'updated_at']);
     }
 
     public function user_votes()
     {
-        return $this->belongsToMany(User::class, 'votes', 'contribution_id', 'user_id')->withPivotValue(['type']);
+        return $this->belongsToMany(User::class, 'votes', 'contribution_id', 'user_id')->withPivot(['type']);
     }
 
     public function saved_users()

@@ -246,6 +246,40 @@ class ContributionApiService implements ContributionApiServiceInterface
         }
     }
 
+    public function comment($id, $content)
+    {
+        DB::beginTransaction();
+        try {
+            $contribution = $this->get($id);
+            $contribution->user_comments()->syncWithoutDetaching([$id => ['content' => $content, 'created_at' => now(), 'updated_at' => now()]]);
+
+            Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY]);
+            DB::commit();
+
+            return $contribution;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function deleteComment($id, $userId)
+    {
+        DB::beginTransaction();
+        try {
+            $contribution = $this->get($id);
+            $contribution->user_comments()->detach($userId);
+
+            Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY]);
+            DB::commit();
+
+            return $contribution;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////
     /// Private Functions
     ////////////////////////////////////////////////////////////////////

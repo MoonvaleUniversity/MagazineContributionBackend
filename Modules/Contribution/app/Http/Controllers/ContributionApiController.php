@@ -126,6 +126,51 @@ class ContributionApiController extends Controller
         return apiResponse(true, 'Contribution was deleted successfully', ['name' => $name]);
     }
 
+    public function comment(Request $request, string $id)
+    {
+        $validatedData = $request->validate([
+            'content' => 'required'
+        ]);
+
+        $contribution = $this->contributionApiService->comment($id, $validatedData['content']);
+
+        $data = [
+            'contributions' => $contribution
+        ];
+
+        return apiResponse(true, "Commented on contribution successfully", $data);
+    }
+
+    public function deleteComment(string $id)
+    {
+        $userId = Auth::user()->id;
+
+        $contribution = $this->contributionApiService->deleteComment($id, $userId);
+
+        $data = [
+            'contributions' => $contribution
+        ];
+
+        return apiResponse(true, "Commented on contribution successfully", $data);
+    }
+
+    public function getComment(string $id)
+    {
+        $userId = Auth::user()->id;
+
+        $contribution = $this->contributionApiService->get($id, 'user_comments');
+
+        $comment = $contribution->user_comments()
+        ->wherePivot('user_id', $userId)
+        ->first()?->pivot;
+
+        $data = [
+            'comment' =>   $comment
+        ];
+
+        return apiResponse(true, "Comment fetched successfully", $data);
+    }
+
     ////////////////////////////////////////////////////////////////////
     /// Private Functions
     ////////////////////////////////////////////////////////////////////

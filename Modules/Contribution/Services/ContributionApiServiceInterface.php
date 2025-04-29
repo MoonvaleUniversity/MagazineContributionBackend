@@ -52,4 +52,8 @@ interface ContributionApiServiceInterface
     public function delete($id);
 
     public function automatic();
+
+    public function comment($id, $content);
+
+    public function deleteComment($id, $userId);
 }
