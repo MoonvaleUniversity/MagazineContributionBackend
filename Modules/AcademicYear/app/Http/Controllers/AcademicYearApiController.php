@@ -13,7 +13,7 @@ use Modules\AcademicYear\Services\AcademicYearApiServiceInterface;
 
 class AcademicYearApiController extends Controller
 {
-    protected $academicYearApiRelations;
+    protected $academicYearApiRelations = ['closure_dates'];
 
     public function __construct(protected AcademicYearApiServiceInterface $academicYearApiService) {}
     /**
@@ -50,7 +50,7 @@ class AcademicYearApiController extends Controller
      */
     public function show(ViewAcademicYearApiRequest $request, string $id)
     {
-        $academicYears = $this->academicYearApiService->get($id);
+        $academicYears = $this->academicYearApiService->get($id, $this->academicYearApiRelations);
         $data = [
             'academic_years' => new AcademicYearApiResource($academicYears)
         ];
