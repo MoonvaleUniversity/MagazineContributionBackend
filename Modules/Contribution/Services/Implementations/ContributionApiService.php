@@ -383,6 +383,11 @@ class ContributionApiService implements ContributionApiServiceInterface
                     $q->where(User::academic_year_id, $conds['user_id@@academic_year_id']);
                 });
             })
+            ->when(isset($conds['user_id@@faculty_id']), function($q) use ($conds) {
+                $q->whereHas('user', function($q) use ($conds) {
+                    $q->where(User::faculty_id, $conds['user_id@@faculty_id']);
+                });
+            })
             ->when(isset($conds['closure_date_id']), function ($q) use ($conds) {
                 $q->where(Contribution::closure_date_id, $conds['closure_date_id']);
             })

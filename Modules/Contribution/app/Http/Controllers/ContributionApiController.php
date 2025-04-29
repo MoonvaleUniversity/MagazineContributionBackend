@@ -215,6 +215,7 @@ class ContributionApiController extends Controller
             'user_id'                           => $request->user_id,
             'user_id@@name'                     => $request->user_name,
             'user_id@@academic_year_id'         => $request->user_academic_year_id,
+            'user_id@@faculty_id'               => $request->faculty_id,
             'closure_date_id'                   => $request->closure_date_id,
             'closure_date_id@@academic_year_id' => $request->closure_date_academic_year_id,
             'is_selected_for_publication'       => $request->is_selected_for_publication,
