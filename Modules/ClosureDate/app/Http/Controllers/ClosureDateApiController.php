@@ -18,7 +18,11 @@ class ClosureDateApiController extends Controller
      */
     public function index(Request $request)
     {
-        $closureDates = $this->closureDateApiService->getAll();
+        [$limit, $offset] = getLimitOffsetFromRequest($request);
+        [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
+        $conds = $this->getFilterConditions($request);
+
+        $closureDates = $this->closureDateApiService->getAll(limit: $limit, offset: $offset, noPagination: $noPagination, pagPerPage: $pagPerPage, conds: $conds);
         $data = [
             'closure_dates' => ClosureResourceApi::collection($closureDates)
         ];
@@ -78,5 +82,19 @@ class ClosureDateApiController extends Controller
     {
         $deleted = $this->closureDateApiService->delete($id);
         return $deleted ? apiResponse(true, "Successfully Deleted") : apiResponse(false, errors: ["404 Not Found"], statusCode: 404);
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    /// Private Functions
+    ////////////////////////////////////////////////////////////////////
+
+    //-------------------------------------------------------------------
+    // Data Preparations
+    //-------------------------------------------------------------------
+    private function getFilterConditions(Request $request)
+    {
+        return [
+            'academic_year_id' => $request->academic_year_id,
+        ];
     }
 }

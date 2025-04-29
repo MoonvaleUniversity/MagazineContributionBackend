@@ -49,6 +49,9 @@ class ClosureDateApiService implements ClosureDateApiServiceInterface
                 })
                 ->when($offset, function ($q, $offset) {
                     $q->offset($offset);
+                })
+                ->when($conds, function($q, $conds) {
+                    $this->searching($q, $conds);
                 });
 
             if (($noPagination !== null && !$noPagination) || $pagPerPage) {
