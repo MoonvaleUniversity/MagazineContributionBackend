@@ -188,6 +188,19 @@ class ContributionApiController extends Controller
         return apiResponse(true, "Comment fetched successfully", $data);
     }
 
+    public function saveContribution(string $id)
+    {
+        $userId = Auth::user()->id;
+
+        $contribution = $this->contributionApiService->save($id, $userId);
+
+        $data = [
+            'contributions' => $contribution
+        ];
+
+        return apiResponse(true, "Contribution saved successfully", $data);
+    }
+
     ////////////////////////////////////////////////////////////////////
     /// Private Functions
     ////////////////////////////////////////////////////////////////////

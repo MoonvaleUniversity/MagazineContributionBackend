@@ -58,4 +58,6 @@ interface ContributionApiServiceInterface
     public function deleteComment($id, $userId);
 
     public function vote($id, $userId, $voteType);
+
+    public function save($id, $userId);
 }

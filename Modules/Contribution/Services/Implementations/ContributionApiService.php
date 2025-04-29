@@ -286,10 +286,32 @@ class ContributionApiService implements ContributionApiServiceInterface
         try {
             $contribution = $this->get($id);
             $existingVote  = $contribution->user_votes()->wherePivot('user_id', $userId)->wherePivot('type', $voteType)->first();
-            if($existingVote) {
+            if ($existingVote) {
                 $contribution->user_votes()->detach($userId);
             } else {
                 $contribution->user_votes()->syncWithoutDetaching([$userId => ['type' => $voteType]]);
+            }
+
+            Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY]);
+            DB::commit();
+
+            return $contribution;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function save($id, $userId)
+    {
+        DB::beginTransaction();
+        try {
+            $contribution = $this->get($id);
+            $existingSave = $contribution->saved_users()->wherePivot('user_id', $userId)->first();
+            if ($existingSave) {
+                $contribution->saved_users()->detach($userId);
+            } else {
+                $contribution->saved_users()->attach($userId);
             }
 
             Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY]);
