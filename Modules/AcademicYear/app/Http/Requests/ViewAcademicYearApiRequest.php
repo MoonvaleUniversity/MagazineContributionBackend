@@ -14,12 +14,7 @@ class ViewAcademicYearApiRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $userId = Auth::user()->id;
-        $user = $this->userApiService->get($userId);
-        if ($user->hasPermissionTo('academic-year.view', 'api')) {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     /**
