@@ -32,7 +32,6 @@ class StoreManagerRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'faculty_id' => 'required|exists:faculties,id',
             'password' => 'required|confirmed',
             'email' => 'required|unique:users,email'
         ];
