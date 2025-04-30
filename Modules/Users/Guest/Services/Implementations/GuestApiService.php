@@ -28,6 +28,7 @@ class GuestApiService implements GuestApiServiceInterface
     {
         //write db connection
         $guestData['role'] = Role::GUEST->value;
+        $guestData['is_approved'] = 0;
         return $this->guestApiService->create($guestData);
     }
 

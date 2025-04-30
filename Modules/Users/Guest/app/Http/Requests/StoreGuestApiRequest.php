@@ -14,11 +14,6 @@ class StoreGuestApiRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $userId = Auth::user()->id;
-        $coordinators = $this->coordinatorApiService->get($userId);
-        if (!$coordinators) {
-            return false;
-        }
         return true;
     }
 

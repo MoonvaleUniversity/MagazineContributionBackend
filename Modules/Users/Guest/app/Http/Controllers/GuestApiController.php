@@ -4,6 +4,7 @@ namespace Modules\Users\Guest\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Shared\Email\EmailServiceInterface;
 use Modules\Users\Guest\App\Http\Requests\StoreGuestApiRequest;
 use Modules\Users\Guest\App\Http\Requests\UpdateGuestApiRequest;
 use Modules\Users\Guest\App\Http\Resources\GuestApiResource;
@@ -12,7 +13,7 @@ use Modules\Users\Guest\Services\GuestApiServiceInterface;
 class GuestApiController extends Controller
 {
     protected $guestApiRelations;
-    public function __construct(protected GuestApiServiceInterface $guestApiService) {}
+    public function __construct(protected GuestApiServiceInterface $guestApiService, protected EmailServiceInterface $emailService) {}
 
 
     /**
@@ -41,6 +42,7 @@ class GuestApiController extends Controller
         $data = [
             'guests' => new GuestApiResource($guests)
         ];
+        $this->emailService->send('message', $guests->email, 'Account Review', ['body' => 'Your account is created. Once our marketing coordinators have approved your account, you will be able to use this account to use our services.']);
         return apiResponse(true, 'guests created successfully', $data);
     }
 
@@ -78,6 +80,17 @@ class GuestApiController extends Controller
         $data = [
             'guests' => new GuestApiResource($guests)
         ];
+        return apiResponse(true, 'User updated successfully', $data);
+    }
+
+    public function approve(string $id)
+    {
+        $guestData['is_approved'] = 1;
+        $guests = $this->guestApiService->update($id, $guestData);
+        $data = [
+            'guests' => new GuestApiResource($guests)
+        ];
+        $this->emailService->send('message', $guests->email, 'Account Review', ['body' => 'Your account is approved. You can now login with the credentials and use our services.']);
         return apiResponse(true, 'User updated successfully', $data);
     }
 

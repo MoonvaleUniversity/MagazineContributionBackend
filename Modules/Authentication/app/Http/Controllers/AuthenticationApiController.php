@@ -42,6 +42,9 @@ class AuthenticationApiController extends Controller
         if (! $user->email_verified_at) {
             return apiResponse(false, 'You need to verify your email first.', statusCode: 401, errors: ['email' => ['You need to verify your email first.']]);
         }
+        if (! $user->is_approved) {
+            return apiResponse(false, "Your account isn't approved yet.", statusCode: 401, errors: ['approve' => ["Your account isn't approved yet."]]);
+        }
         if (! Auth::guard('web')->attempt($request->only('email', 'password'))) {
             return apiResponse(false, 'Invaliad Credentials.', statusCode: 401, errors: ['credentials' => ['The credentials you provided is incorrect.']]);
         }

@@ -30,6 +30,7 @@ class User extends Authenticatable
     const email_verified_at = 'email_verified_at';
     const password = 'password';
     const is_suspended = 'is_suspended';
+    const is_approved = 'is_approved';
     const version = 'version';
     const created_by = 'created_by';
     const updated_by = 'updated_by';
@@ -45,6 +46,7 @@ class User extends Authenticatable
         'email',
         'password',
         'is_suspended',
+        'is_approved',
         'confirm_password',
         'email_verified_at',
         'version',
