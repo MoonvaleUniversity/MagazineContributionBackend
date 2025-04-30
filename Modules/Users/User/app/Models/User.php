@@ -102,7 +102,7 @@ class User extends Authenticatable
 
     public function contribution_votes()
     {
-        return $this->belongsToMany(Contribution::class, 'votes', 'user_id', 'contribution_id')->withPivotValue(['type']);
+        return $this->belongsToMany(Contribution::class, 'votes', 'user_id', 'contribution_id')->withPivot(['type']);
     }
 
     public function contributions()

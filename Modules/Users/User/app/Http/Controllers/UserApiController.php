@@ -4,6 +4,7 @@ namespace Modules\Users\User\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Contribution\Services\ContributionApiServiceInterface;
 use Modules\Users\User\App\Http\Requests\StoreUserApiRequest;
 use Modules\Users\User\App\Http\Requests\UpdateUserApiRequest;
 use Modules\Users\User\App\Http\Resources\UserApiResource;
@@ -13,7 +14,7 @@ class UserApiController extends Controller
 {
     protected $userApiRelations;
 
-    public function __construct(protected UserApiServiceInterface $userApiService) {}
+    public function __construct(protected UserApiServiceInterface $userApiService, protected ContributionApiServiceInterface $contributionApiService) {}
 
     /**
      * Display a listing of the resource.
@@ -74,6 +75,10 @@ class UserApiController extends Controller
      */
     public function destroy(string $id)
     {
+        $user = $this->userApiService->get($id, ['contributions']);
+        foreach($user->contributions as $contribution) {
+            $this->contributionApiService->delete($contribution->id);
+        }
         $name = $this->userApiService->delete($id);
         $data = [
             'name' => $name

@@ -67,6 +67,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function contributions()
+    {
+        return $this->hasMany(Contribution::class, Contribution::user_id, self::id);
+    }
+
     public function academic_year()
     {
         return $this->belongsTo(AcademicYear::class, self::academic_year_id, AcademicYear::id);
@@ -89,11 +94,11 @@ class User extends Authenticatable
 
     public function contribution_comments()
     {
-        return $this->belongsToMany(Contribution::class, 'comments', 'user_id', 'contribution_id');
+        return $this->belongsToMany(Contribution::class, 'comments', 'user_id', 'contribution_id')->withPivot(['content', 'created_at', 'updated_at']);
     }
 
     public function contribution_votes()
     {
-        return $this->belongsToMany(Contribution::class, 'votes', 'user_id', 'contribution_id')->withPivotValue(['type']);
+        return $this->belongsToMany(Contribution::class, 'votes', 'user_id', 'contribution_id')->withPivot(['type']);
     }
 }

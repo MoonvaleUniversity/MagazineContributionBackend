@@ -348,12 +348,22 @@ class ContributionApiService implements ContributionApiServiceInterface
 
     private function deleteContribution($id)
     {
+        $this->removeForeignTableData($id);
         $contribution = $this->get($id);
         $name = $contribution->name;
         $docUrl = $contribution->doc_url;
         $contribution->delete();
 
         return [$name, $docUrl];
+    }
+
+
+    private function removeForeignTableData($id)
+    {
+        $contribution = $this->get($id);
+        $contribution->user_comments()->detach();
+        $contribution->user_votes()->detach();
+        $contribution->saved_users()->detach();
     }
 
     private function deleteContributionImages($id)

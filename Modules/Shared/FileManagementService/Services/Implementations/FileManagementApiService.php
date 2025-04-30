@@ -54,4 +54,19 @@ class FileManagementApiService implements FileManagementApiServiceInterface
 
         throw new \Exception("Multiple file upload failed: " . $response->body());
     }
+
+    public function delete(string $url)
+    {
+        $request = Http::asForm();
+
+        $response = $request->post("{$this->baseUrl}/delete-file", [
+            'file_url' => $url,
+        ]);
+
+        if ($response->successful()) {
+            return $response->json('success');
+        }
+
+        throw new \Exception("Multiple file upload failed: " . $response->body());
+    }
 }

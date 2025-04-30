@@ -9,4 +9,6 @@ interface FileManagementApiServiceInterface
     public function singleUpload(string $uploadPath, UploadedFile $file);
 
     public function multiUpload(string $uploadPath, array $files);
+
+    public function delete(string $url);
 }
