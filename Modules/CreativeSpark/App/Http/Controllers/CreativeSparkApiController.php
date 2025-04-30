@@ -85,8 +85,10 @@ class CreativeSparkApiController extends Controller
     //-------------------------------------------------------------------
     private function getFilterConditions(Request $request)
     {
-        return [
-            'title' => $request->title
-        ];
+        $conds = [];
+        if($request->has('title')) {
+            $conds['title'] = $request->get('title');
+        }
+        return $conds;
     }
 }
