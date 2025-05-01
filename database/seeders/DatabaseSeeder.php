@@ -49,11 +49,6 @@ class DatabaseSeeder extends Seeder
             $user->assignRole(Role::STUDENT->label());
         }
        
-       
-        $user = User::where('email', 'yunbira2412@gmail.com')->first();
-$user->update([
-    'password' => 'password' // Ensure the password is updated securely
-]);
         $admin = User::firstOrCreate([
             'email' => 'admin@mv.com',
         ], [
