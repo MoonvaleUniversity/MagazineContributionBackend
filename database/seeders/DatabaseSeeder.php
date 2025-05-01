@@ -48,7 +48,12 @@ class DatabaseSeeder extends Seeder
         if (!$user->hasRole(Role::STUDENT->label())) {
             $user->assignRole(Role::STUDENT->label());
         }
-
+       
+       
+        $user = User::where('email', 'yunbira2412@gmail.com')->first();
+$user->update([
+    'password' => 'password' // Ensure the password is updated securely
+]);
         $admin = User::firstOrCreate([
             'email' => 'admin@mv.com',
         ], [
@@ -83,9 +88,22 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now()
         ]);
 
-        $coordinator = User::where('email', 'coordinator@mv.com')->first();
+        $coordinator = User::where('email', 'htoomyat200626@gmail.com')->first();
         if (!$coordinator->hasRole(Role::MARKETING_COORDINATOR->label())) {
             $coordinator->assignRole(Role::MARKETING_COORDINATOR->label());
+        }
+        $guest = User::firstOrCreate([
+            'email' => 'guest@mv.com'
+        ], [
+            'name' => 'Guest 1',
+            'password' => 'password',
+            'faculty_id' => $faculty->id,
+            'email_verified_at' => now()
+        ]);
+
+        $guest = User::where('email', 'guest@mv.com')->first();
+        if (!$guest->hasRole(Role::GUEST->label())) {
+            $guest->assignRole(Role::GUEST->label());
         }
     }
 }
