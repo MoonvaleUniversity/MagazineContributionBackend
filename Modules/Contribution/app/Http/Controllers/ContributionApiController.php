@@ -19,7 +19,7 @@ class ContributionApiController extends Controller
     protected $contributionApiRelations;
     public function __construct(protected ContributionApiServiceInterface $contributionApiService, protected UserApiServiceInterface $userApiService, protected EmailServiceInterface $emailService)
     {
-        $this->contributionApiRelations = ['images', 'user', 'user.faculty'];
+        $this->contributionApiRelations = ['images', 'user', 'user.faculty', 'user_votes', 'user_comments'];
     }
     /**
      * Display a listing of the resource.

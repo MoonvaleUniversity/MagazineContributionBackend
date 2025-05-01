@@ -12,7 +12,7 @@ use Modules\Users\User\Services\UserApiServiceInterface;
 
 class UserApiController extends Controller
 {
-    protected $userApiRelations;
+    protected $userApiRelations = ['saved_contributions','saved_articles'];
 
     public function __construct(protected UserApiServiceInterface $userApiService, protected ContributionApiServiceInterface $contributionApiService) {}
 
@@ -50,7 +50,7 @@ class UserApiController extends Controller
      */
     public function show(string $id)
     {
-        $user = $this->userApiService->get($id);
+        $user = $this->userApiService->get($id, $this->userApiRelations);
         $data = [
             'user' => new UserApiResource($user)
         ];

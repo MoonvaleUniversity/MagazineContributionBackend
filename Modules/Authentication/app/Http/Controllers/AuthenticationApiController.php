@@ -33,7 +33,7 @@ class AuthenticationApiController extends Controller
     public function login(LoginApiRequest $request)
     {
         $data = $request->validated();
-        $user = $this->userApiService->get(conds: ['email' => $request->email]);
+        $user = $this->userApiService->get(conds: ['email' => $request->email], relations: ['saved_contributions','saved_articles']);
 
         if(!$user) {
             return apiResponse(false, 'Invaliad Credentials', statusCode: 401, errors: ['credentials' => ['The credentials you provided is incorrect.']]);
