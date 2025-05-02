@@ -2,6 +2,7 @@
 
 namespace Modules\Users\Guest\App\Http\Controllers;
 
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Shared\Email\EmailServiceInterface;
@@ -9,11 +10,12 @@ use Modules\Users\Guest\App\Http\Requests\StoreGuestApiRequest;
 use Modules\Users\Guest\App\Http\Requests\UpdateGuestApiRequest;
 use Modules\Users\Guest\App\Http\Resources\GuestApiResource;
 use Modules\Users\Guest\Services\GuestApiServiceInterface;
+use Modules\Users\User\Services\UserApiServiceInterface;
 
 class GuestApiController extends Controller
 {
     protected $guestApiRelations;
-    public function __construct(protected GuestApiServiceInterface $guestApiService, protected EmailServiceInterface $emailService) {}
+    public function __construct(protected GuestApiServiceInterface $guestApiService, protected EmailServiceInterface $emailService, protected UserApiServiceInterface $userApiService) {}
 
 
     /**
@@ -39,10 +41,12 @@ class GuestApiController extends Controller
     {
         $validatedData = $request->validated();
         $guests = $this->guestApiService->create($validatedData);
+        $coordinator = $this->userApiService->get(conds: ['faculty_id' => $guests->faculty_id, 'role' => Role::MARKETING_COORDINATOR->label()]);
         $data = [
             'guests' => new GuestApiResource($guests)
         ];
         $this->emailService->send('message', $guests->email, 'Account Review', ['body' => 'Your account is created. Once our marketing coordinators have approved your account, you will be able to use this account to use our services.']);
+        $this->emailService->send('message', $coordinator->email, 'Account Review', ['body' => "{$guests->email} has been created and now is waiting to be reviewd."]);
         return apiResponse(true, 'guests created successfully', $data);
     }
 
