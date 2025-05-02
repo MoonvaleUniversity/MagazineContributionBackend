@@ -3,6 +3,7 @@
 namespace Modules\Contribution\Services\Implementations;
 
 use App\Config\Cache\ContributionCache;
+use App\Config\Cache\UserCache;
 use App\Facades\Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -253,7 +254,7 @@ class ContributionApiService implements ContributionApiServiceInterface
             $contribution = $this->get($id);
             $contribution->user_comments()->syncWithoutDetaching([$userId => ['content' => $content, 'created_at' => now(), 'updated_at' => now()]]);
 
-            Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY]);
+            Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY, UserCache::GET_ALL_EXPIRY, UserCache::GET_KEY]);
             DB::commit();
 
             return $contribution;
@@ -270,7 +271,7 @@ class ContributionApiService implements ContributionApiServiceInterface
             $contribution = $this->get($id);
             $contribution->user_comments()->detach($userId);
 
-            Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY]);
+            Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY, UserCache::GET_ALL_EXPIRY, UserCache::GET_KEY]);
             DB::commit();
 
             return $contribution;
@@ -292,7 +293,7 @@ class ContributionApiService implements ContributionApiServiceInterface
                 $contribution->user_votes()->syncWithoutDetaching([$userId => ['type' => $voteType]]);
             }
 
-            Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY]);
+            Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY, UserCache::GET_ALL_EXPIRY, UserCache::GET_KEY]);
             DB::commit();
 
             return $contribution;
@@ -314,7 +315,7 @@ class ContributionApiService implements ContributionApiServiceInterface
                 $contribution->saved_users()->attach($userId);
             }
 
-            Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY]);
+            Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY, UserCache::GET_ALL_EXPIRY, UserCache::GET_KEY]);
             DB::commit();
 
             return $contribution;
