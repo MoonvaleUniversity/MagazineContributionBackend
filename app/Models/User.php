@@ -29,6 +29,7 @@ class User extends Authenticatable
     const password = 'password';
     const is_suspended = 'is_suspended';
     const version = 'version';
+    const last_login = 'last_login';
     const created_by = 'created_by';
     const updated_by = 'updated_by';
     /**

@@ -3,6 +3,7 @@ namespace Modules\Authentication\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Modules\Authentication\App\Http\Requests\LoginApiRequest;
@@ -46,6 +47,22 @@ class AuthenticationApiController extends Controller
         $data  = ['user' => new UserApiResource($user), 'token' => $token];
 
         return apiResponse(true, "Login success.", $data);
+    }
+
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user) {
+            // Set last_login to now (when they log out)
+            $user->last_login = now();
+            $user->save();
+
+            // Revoke all tokens (or current token only if preferred)
+            $user->currentAccessToken()->delete();
+        }
+
+        return apiResponse(true, "Logout successful.");
     }
 
     public function verifyEmail($id)

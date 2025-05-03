@@ -109,6 +109,20 @@ class DatabaseSeeder extends Seeder
 
         }
 
+        $admin = User::firstOrCreate([
+            'email' => 'bobo@mv.com',
+        ], [
+            'name' => 'Moonvale Admin',
+            'password' => 'password',
+            'email_verified_at' => now(),
+        ]);
+
+        $admin = User::where('email', 'bobo@mv.com')->first();
+        if (!$admin->hasRole(Role::ADMIN->label())) {
+            $admin->assignRole(Role::ADMIN->label());
+
+        }
+
         $manager = User::firstOrCreate([
             'email' => 'manager@mv.com',
         ], [

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->boolean('is_suspended')->default(false);
             $table->rememberToken();
             $table->integer('version')->default(1);
+            $table->timestamp('last_login')->nullable();
             $table->foreignId('created_by')->nullable()->constrained(User::table);
             $table->foreignId('updated_by')->nullable()->constrained(User::table);
             $table->timestamps();
