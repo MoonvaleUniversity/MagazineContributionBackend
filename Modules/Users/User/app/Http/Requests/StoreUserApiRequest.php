@@ -29,6 +29,7 @@ class StoreUserApiRequest extends FormRequest
             'password' => 'required|min:6',
             'role'     => ['required', Rule::in(Role::values())],
             'faculty_id' => 'required|string',
+            'academic_year_id' => 'nullable|exists:academic_years'
         ];
     }
 }
