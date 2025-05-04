@@ -68,6 +68,7 @@ class UpdateContributionApiRequest extends FormRequest
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg',
             'closure_date_id' => 'required|exists:closure_dates,id',
             'user_id' => 'required|exists:users,id',
+            'delete_images' => 'nullable|array',
             'delete_images.*' => 'nullable|exists:contribution_images,id'
         ];
     }

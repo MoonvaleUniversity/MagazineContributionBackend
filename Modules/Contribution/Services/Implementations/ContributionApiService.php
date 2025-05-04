@@ -192,6 +192,7 @@ class ContributionApiService implements ContributionApiServiceInterface
                 foreach ($contributionImages as $image) {
                     $this->fileManagementApiService->delete($image);
                 }
+                $contribution->images()->whereIn('id', $contributionData['delete_images'])->delete();
             }
 
             $this->updateContribution($id, $contributionData);
