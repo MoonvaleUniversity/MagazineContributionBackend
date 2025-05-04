@@ -57,9 +57,7 @@ class FileManagementApiService implements FileManagementApiServiceInterface
 
     public function delete(string $url)
     {
-        $request = Http::asForm();
-
-        $response = $request->post("{$this->baseUrl}/delete-file", [
+        $response = Http::post("{$this->baseUrl}/delete-file", [
             'file_url' => $url,
         ]);
 

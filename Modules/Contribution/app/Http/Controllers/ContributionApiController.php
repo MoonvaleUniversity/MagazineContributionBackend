@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Modules\Contribution\App\Http\Requests\DeleteContributionApiRequest;
 use Modules\Contribution\App\Http\Requests\ReviewContributionApiRequest;
 use Modules\Contribution\App\Http\Requests\StoreContributionApiRequest;
+use Modules\Contribution\App\Http\Requests\UpdateContributionApiRequest;
 use Modules\Contribution\App\Http\Requests\ViewContributionApiRequest;
 use Modules\Contribution\Services\ContributionApiServiceInterface;
 use Modules\Shared\Email\EmailServiceInterface;
@@ -95,9 +96,14 @@ class ContributionApiController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateContributionApiRequest $request, string $id)
     {
-        //
+        $validatedData = $request->validated();
+        $contribution = $this->contributionApiService->update($id, $validatedData, $request->file('doc'), $request->file('images'));
+        $data = [
+            'contributions' => $contribution
+        ];
+        return apiResponse(true, "Contribution updated successfully", $data);
     }
 
     public function publish(string $id)

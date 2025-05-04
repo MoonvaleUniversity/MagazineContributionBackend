@@ -43,7 +43,7 @@ interface ContributionApiServiceInterface
 
     public function create($contributionData, $wordFile, $imageFiles);
 
-    public function update();
+    public function update($id, $contributionData, $wordFile = null, $imageFiles = null);
 
     public function updatePublish($id);
 
