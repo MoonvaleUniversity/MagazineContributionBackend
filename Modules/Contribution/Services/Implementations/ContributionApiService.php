@@ -201,6 +201,9 @@ class ContributionApiService implements ContributionApiServiceInterface
                 $this->createContributionImages($contribution, $imageURLs);
             }
 
+            DB::commit();
+            Cache::clear([ContributionCache::GET_KEY, ContributionCache::GET_ALL_KEY]);
+
             return $contribution;
         } catch (\Throwable $e) {
             DB::rollBack();

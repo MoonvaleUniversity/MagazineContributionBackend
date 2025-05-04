@@ -40,9 +40,14 @@ class UpdateContributionApiRequest extends FormRequest
         }
 
         $contributionId = $this->route('contribution');
-        $contributionData = $this->contributionApiService->get($contributionId);
+        $contribution = $this->contributionApiService->get($contributionId);
 
-        if($contributionData->images()->count() - count((array) $this->input('delete_images')) > 5) {
+        $currentImageCount = $contribution->images()->count();
+        $deleteCount = count((array) $this->input('delete_images', []));
+        $newImagesCount = count((array) $this->file('images', []));
+        $newTotalCount = ($currentImageCount - $deleteCount + $newImagesCount);
+
+        if ($newTotalCount > 5) {
             return false;
         }
 
