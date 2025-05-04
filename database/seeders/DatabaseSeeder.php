@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
         if (!$user->hasRole(Role::STUDENT->label())) {
             $user->assignRole(Role::STUDENT->label());
         }
-       
+
         $admin = User::firstOrCreate([
             'email' => 'admin@mv.com',
         ], [
@@ -83,7 +83,7 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now()
         ]);
 
-        $coordinator = User::where('email', 'htoomyat200626@gmail.com')->first();
+        $coordinator = User::where('email', 'coordinator@mv.com')->first();
         if (!$coordinator->hasRole(Role::MARKETING_COORDINATOR->label())) {
             $coordinator->assignRole(Role::MARKETING_COORDINATOR->label());
         }

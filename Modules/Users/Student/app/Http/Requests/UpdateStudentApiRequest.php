@@ -4,20 +4,31 @@ namespace Modules\Users\Student\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Modules\Users\Coordinator\Services\CoordinatorApiServiceInterface;
+use Modules\Users\Student\Services\StudentApiServiceInterface;
 
 class UpdateStudentApiRequest extends FormRequest
 {
+    public function __construct(protected CoordinatorApiServiceInterface $coordinatorApiService, protected StudentApiServiceInterface $studentApiService) {}
+
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        $currentUserId = Auth::id();
+        $userId = Auth::id();
+        $coordinator = $this->coordinatorApiService->get($userId);
+        if(!$coordinator) {
+            return false;
+        }
 
-        $routeCoordinatorId = $this->route('id');
-
-        // Prevent user from updating another coordinator's data
-        if ((int) $currentUserId !== (int) $routeCoordinatorId) {
+        $routeStudentId = $this->route('id');
+        $student = $this->studentApiService->get($routeStudentId);
+        if(!$student) {
+            return false;
+        }
+        if($coordinator->faculty_id != $student->faculty_id) {
             return false;
         }
 
@@ -31,13 +42,16 @@ class UpdateStudentApiRequest extends FormRequest
      */
     public function rules(): array
     {
-        $routeCoordinatorId = $this->route('id');
+        $routeUserId = $this->route('student');
 
         return [
             'name' => 'required',
-            'faculty_id' => 'required|exists:faculties,id',
-            'password' => 'required|confirmed',
-            'email' => "required|unique:users,email,$routeCoordinatorId"
+            'faculty_id' => 'nullable|exists:faculties,id',
+            'password' => 'nullable|confirmed',
+            'email' => [
+                'required',
+                Rule::unique('users', 'email')->ignore($routeUserId),
+            ],
         ];
     }
 }
