@@ -23,7 +23,7 @@ class UpdateStudentApiRequest extends FormRequest
             return false;
         }
 
-        $routeStudentId = $this->route('id');
+        $routeStudentId = $this->route('student');
         $student = $this->studentApiService->get($routeStudentId);
         if(!$student) {
             return false;
