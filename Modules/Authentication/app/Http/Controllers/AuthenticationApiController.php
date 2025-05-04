@@ -48,10 +48,28 @@ class AuthenticationApiController extends Controller
             return apiResponse(false, 'Invaliad Credentials.', statusCode: 401, errors: ['credentials' => ['The credentials you provided is incorrect.']]);
         }
 
+        $user->last_login = now();
+
         $token = $user->createToken('auth_token')->plainTextToken;
         $data  = ['user' => new UserApiResource($user), 'token' => $token];
 
         return apiResponse(true, "Login success.", $data);
+    }
+
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user) {
+            // Set last_login to now (when they log out)
+            $user->last_login = now();
+            $user->save();
+
+            // Revoke all tokens (or current token only if preferred)
+            $user->currentAccessToken()->delete();
+        }
+
+        return apiResponse(true, "Logout successful.");
     }
 
     public function verifyEmail($id)

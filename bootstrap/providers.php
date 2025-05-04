@@ -17,4 +17,6 @@ return [
     Modules\Users\User\App\Providers\UserServiceProvier::class,
     Modules\Shared\FileManagementService\App\Providers\FileManagementServiceProvider::class,
     Modules\CreativeSpark\App\Providers\CreativeSparkServiceProvider::class,
+    Modules\PageView\App\Providers\PageViewServiceProvider::class,
+    Modules\BrowserTrack\App\Providers\BrowserApiServiceProvider::class,
 ];

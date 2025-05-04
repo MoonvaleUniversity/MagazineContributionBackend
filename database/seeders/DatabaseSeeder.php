@@ -76,7 +76,7 @@ class DatabaseSeeder extends Seeder
         }
 
         $coordinator = User::firstOrCreate([
-            'email' => 'coordinator@mv.com'
+            'email' => 'y'
         ], [
             'name' => 'Moonvale Marketing Coordinator',
             'password' => 'password',
