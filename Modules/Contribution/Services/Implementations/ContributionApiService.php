@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Contribution\Services\Implementations;
 
 use App\Config\Cache\ContributionCache;
@@ -19,7 +18,6 @@ use Modules\Faculty\Services\FacultyApiServiceInterface;
 use Modules\Shared\Email\EmailServiceInterface;
 use Modules\Shared\FileManagementService\Services\FileManagementApiServiceInterface;
 use Modules\Shared\FileUpload\FileUploadServiceInterface;
-use Modules\Shared\ZipFile\ZipFileServiceInterface;
 use Modules\Users\User\App\Models\User;
 use Modules\Users\User\Services\UserApiServiceInterface;
 use ZipArchive;
@@ -75,7 +73,7 @@ class ContributionApiService implements ContributionApiServiceInterface
                     $this->searching($q, $conds);
                 });
 
-            if (($noPagination !== null && !$noPagination) || $pagPerPage) {
+            if (($noPagination !== null && ! $noPagination) || $pagPerPage) {
                 return $contributions->paginate($pagPerPage ?? config('constants.pagPerPage'));
             } else {
                 return $contributions->get();
@@ -90,9 +88,9 @@ class ContributionApiService implements ContributionApiServiceInterface
         try {
             //Generate Upload Path
             $academicYear = $this->academicYearApiService->get(conds: ['closure_date_id@@id' => $contributionData['closure_date_id']]);
-            $faculty = $this->facultyApiService->get(conds: ['student_id@@id' => $contributionData['user_id']]);
-            $student = $this->userApiService->get($contributionData['user_id']);
-            $uploadPath = $this->generateUploadPath($academicYear, $faculty, $student, $contributionData['name']);
+            $faculty      = $this->facultyApiService->get(conds: ['student_id@@id' => $contributionData['user_id']]);
+            $student      = $this->userApiService->get($contributionData['user_id']);
+            $uploadPath   = $this->generateUploadPath($academicYear, $faculty, $student, $contributionData['name']);
             $faculty      = $this->facultyApiService->get(conds: ['student_id@@id' => $contributionData['user_id']]);
             $student      = $this->userApiService->get($contributionData['user_id']);
             //Upload Word File
@@ -104,7 +102,6 @@ class ContributionApiService implements ContributionApiServiceInterface
             //Upload Images File
             $imageURLs = $this->fileManagementApiService->multiUpload($uploadPath, $imageFiles);
             $this->createContributionImages($contribution, $imageURLs);
-
 
             DB::commit();
             Cache::clear([ContributionCache::GET_KEY, ContributionCache::GET_ALL_KEY]);
@@ -121,8 +118,8 @@ class ContributionApiService implements ContributionApiServiceInterface
         DB::beginTransaction();
 
         try {
-            $timer = now()->subMinutes(5);
-            $timer = now()->subMinutes(5);
+            $timer         = now()->subMinutes(5);
+            $timer         = now()->subMinutes(5);
             $contributions = Contribution::where('created_at', '<=', $timer)->get();
 
             foreach ($contributions as $contribution) {
@@ -130,10 +127,10 @@ class ContributionApiService implements ContributionApiServiceInterface
                     ->where('contribution_id', $contribution->id)
                     ->count();
                 if ($commentCount == 0) {
-                    $user = User::find($contribution->user_id);
+                    $user                 = User::find($contribution->user_id);
                     $marketingCoordinator = $this->userApiService->getAll(
                         conds: [
-                            'faculty_id' => $user->faculty_id
+                            'faculty_id' => $user->faculty_id,
                         ],
                         relations: ['roles']
                     )
@@ -167,10 +164,70 @@ class ContributionApiService implements ContributionApiServiceInterface
         }
     }
 
-    public function update()
+    public function update(int $id, array $data, $wordFile = null, array $imageFiles = [])
     {
-        //write db connection
+        DB::beginTransaction();
+
+    try {
+        $contribution = Contribution::with('images')->findOrFail($id);
+        $academicYear = $this->academicYearApiService->get(['closure_date_id' => $data['closure_date_id']]);
+        $faculty      = $this->facultyApiService->get(conds: ['student_id' => $data['user_id']]);
+        $student      = $this->userApiService->get($data['user_id']);
+        $uploadPath   = $this->generateUploadPath($academicYear, $faculty, $student, $data['name']);
+
+        if ($wordFile) {
+            $oldDoc = $contribution->{Contribution::doc_url} ?? null;
+            if ($oldDoc) {
+                try {
+                    $this->fileManagementApiService->delete($oldDoc);
+                } catch (\Throwable $e) {
+
+                }
+            }
+            $data[Contribution::doc_url] = $this->fileManagementApiService
+                ->singleUpload($uploadPath, $wordFile);
+        }
+        $contribution->update($data);
+
+        if (! empty($imageFiles)) {
+            foreach ($contribution->images as $img) {
+                if ($img->image_url) {
+                    try {
+                        $this->fileManagementApiService->delete($img->image_url);
+                    } catch (\Throwable $e) {
+
+                    }
+                }
+            }
+            $contribution->images()->delete();
+
+            // upload each new image
+            $newUrls = [];
+            foreach ($imageFiles as $file) {
+                if (! $file->isValid()) {
+                    return apiResponse(false, 'Invalid image file');
+                }
+                $url = $this->fileManagementApiService->singleUpload($uploadPath, $file);
+                if (! $url) {
+                    return apiResponse(false, 'Invalid image file');
+                }
+                $newUrls[] = $url;
+            }
+
+            // insert new image records
+            $this->createContributionImages($contribution, $newUrls);
+        }
+
+        DB::commit();
+        Cache::clear([ContributionCache::GET_KEY, ContributionCache::GET_ALL_KEY]);
+
+        return $contribution->fresh();
+    } catch (\Throwable $e) {
+        DB::rollBack();
+        throw $e;
     }
+    }
+
 
     public function updatePublish($id)
     {
@@ -201,7 +258,7 @@ class ContributionApiService implements ContributionApiServiceInterface
             $relativePath = Str::after($contribution->doc_url, '/storage/');
             $filePath     = storage_path("app/public/{$relativePath}");
 
-            if (!file_exists($filePath)) {
+            if (! file_exists($filePath)) {
                 return apiResponse(false, 'File not found.', ['file_path' => $filePath], 404);
             }
 
@@ -226,13 +283,12 @@ class ContributionApiService implements ContributionApiServiceInterface
         }
     }
 
-
     public function delete($id)
     {
         //write db connection
         DB::beginTransaction();
         try {
-            $imageUrls = $this->deleteContributionImages($id);
+            $imageUrls       = $this->deleteContributionImages($id);
             [$name, $docUrl] = $this->deleteContribution($id);
             Cache::clear([ContributionCache::GET_ALL_KEY, ContributionCache::GET_KEY]);
             DB::commit();
@@ -286,7 +342,7 @@ class ContributionApiService implements ContributionApiServiceInterface
         DB::beginTransaction();
         try {
             $contribution = $this->get($id);
-            $existingVote  = $contribution->user_votes()->wherePivot('user_id', $userId)->wherePivot('type', $voteType)->first();
+            $existingVote = $contribution->user_votes()->wherePivot('user_id', $userId)->wherePivot('type', $voteType)->first();
             if ($existingVote) {
                 $contribution->user_votes()->detach($userId);
             } else {
@@ -351,13 +407,12 @@ class ContributionApiService implements ContributionApiServiceInterface
     {
         $this->removeForeignTableData($id);
         $contribution = $this->get($id);
-        $name = $contribution->name;
-        $docUrl = $contribution->doc_url;
+        $name         = $contribution->name;
+        $docUrl       = $contribution->doc_url;
         $contribution->delete();
 
         return [$name, $docUrl];
     }
-
 
     private function removeForeignTableData($id)
     {
@@ -370,10 +425,33 @@ class ContributionApiService implements ContributionApiServiceInterface
     private function deleteContributionImages($id)
     {
         $contribution = $this->get($id, ['images']);
-        $imageUrls = $contribution->images->pluck('image_url');
+        $imageUrls    = $contribution->images->pluck('image_url');
         $contribution->images()->delete();
         return $imageUrls;
     }
+
+    private function updateContribution(Contribution $contribution, array $data)
+    {
+        $contribution->update($data);
+        return $contribution->fresh();
+    }
+    private function updateContributionImages(Contribution $contribution, array $newImageURLs): void
+{
+    // Safely delete old files
+    foreach ($contribution->images as $image) {
+        if (!empty($image->image_url)) {
+            try {
+                $this->fileManagementApiService->delete($image->image_url);
+            } catch (\Throwable $ignored) {
+                // silently ignore
+            }
+        }
+    }
+
+    // Remove old DB records and insert new ones
+    $contribution->images()->delete();
+    $this->createContributionImages($contribution, $newImageURLs);
+}
 
     private function searching(Builder $query, $conds)
     {
@@ -394,8 +472,8 @@ class ContributionApiService implements ContributionApiServiceInterface
                     $q->where(User::academic_year_id, $conds['user_id@@academic_year_id']);
                 });
             })
-            ->when(isset($conds['user_id@@faculty_id']), function($q) use ($conds) {
-                $q->whereHas('user', function($q) use ($conds) {
+            ->when(isset($conds['user_id@@faculty_id']), function ($q) use ($conds) {
+                $q->whereHas('user', function ($q) use ($conds) {
                     $q->where(User::faculty_id, $conds['user_id@@faculty_id']);
                 });
             })

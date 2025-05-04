@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Contribution\App\Http\Controllers;
 
 use App\Enums\Role;
@@ -29,8 +28,8 @@ class ContributionApiController extends Controller
         [$limit, $offset]            = getLimitOffsetFromRequest($request);
         [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
         $conds                       = $this->getFilterConditions($request);
-        $contribution = $this->contributionApiService->getAll($this->contributionApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
-        $data         = [
+        $contribution                = $this->contributionApiService->getAll($this->contributionApiRelations, $limit, $offset, $noPagination, $pagPerPage, $conds);
+        $data                        = [
             'contributions' => $contribution,
         ];
         return apiResponse(true, 'Data retrieve successfully', $data);
@@ -41,19 +40,19 @@ class ContributionApiController extends Controller
      */
     public function store(StoreContributionApiRequest $request)
     {
-        $validatedData = $request->validated();
-        $studentUser = $this->userApiService->get($validatedData['user_id']);
+        $validatedData        = $request->validated();
+        $studentUser          = $this->userApiService->get($validatedData['user_id']);
         $marketingCoordinator = $this->userApiService->get(
             conds: [
                 'faculty_id' => $studentUser->faculty_id,
-                'role' => Role::MARKETING_COORDINATOR->label()
+                'role'       => Role::MARKETING_COORDINATOR->label(),
             ]
         );
 
-        if (!$studentUser) {
+        if (! $studentUser) {
             return apiResponse(false, 'User email not found', [], 400);
         }
-        if (!$marketingCoordinator) {
+        if (! $marketingCoordinator) {
             return apiResponse(false, 'Marketing coordinator not found for this faculty.');
         }
 
@@ -79,11 +78,11 @@ class ContributionApiController extends Controller
     public function show(ViewContributionApiRequest $request, $id)
     {
         $contribution = $this->contributionApiService->get($id, relations: $this->contributionApiRelations);
-        if (!$contribution) {
+        if (! $contribution) {
             return apiResponse(false, 'Contribution not found', [], 404, ['contribution' => 'Contribution not found']);
         }
         $data = [
-            'contributions' => $contribution
+            'contributions' => $contribution,
         ];
         return apiResponse(true, "Show data successfully", $data);
     }
@@ -95,9 +94,39 @@ class ContributionApiController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreContributionApiRequest $request, $id)
     {
-        //
+        $validatedData = $request->validated();
+
+        $validatedData['user_id'] = request()->user()->id;
+
+        // Try to find a contribution with the same name and user
+        $existingContribution = $this->contributionApiService->get(conds: [
+            'user_id' => $validatedData['user_id'],
+            'name'    => $validatedData['name'],
+        ]);
+
+        // Check for name conflict (by same user, with a different ID)
+        if ($existingContribution && $existingContribution->id != $id) {
+            return apiResponse(
+                false,
+                'You already created this contribution.',
+                statusCode: 403,
+                errors: ['contribution' => 'You already created this contribution.']
+            );
+        }
+
+        // Proceed to update
+        $contribution = $this->contributionApiService->update(
+            $id,
+            $validatedData,
+            $request->file('doc'),
+            $request->file('images')
+        );
+
+        return apiResponse(true, 'Contribution updated successfully', [
+            'contributions' => $contribution,
+        ]);
     }
 
     public function publish(string $id)
@@ -117,8 +146,8 @@ class ContributionApiController extends Controller
     public function destroy(DeleteContributionApiRequest $request, string $id)
     {
         $contribution = $this->contributionApiService->get($id, relations: $this->contributionApiRelations);
-        $user = Auth::user();
-        if (!$contribution) {
+        $user         = Auth::user();
+        if (! $contribution) {
             return apiResponse(false, 'Contribution not found', [], 404, ['contribution' => 'Contribution not found']);
         }
         $name = $this->contributionApiService->delete($id);
@@ -130,14 +159,14 @@ class ContributionApiController extends Controller
     public function comment(Request $request, string $id)
     {
         $validatedData = $request->validate([
-            'content' => 'required'
+            'content' => 'required',
         ]);
         $userId = Auth::user()->id;
 
         $contribution = $this->contributionApiService->comment($id, $userId, $validatedData['content']);
 
         $data = [
-            'contributions' => $contribution
+            'contributions' => $contribution,
         ];
 
         return apiResponse(true, "Commented on contribution successfully", $data);
@@ -150,7 +179,7 @@ class ContributionApiController extends Controller
         $contribution = $this->contributionApiService->deleteComment($id, $userId);
 
         $data = [
-            'contributions' => $contribution
+            'contributions' => $contribution,
         ];
 
         return apiResponse(true, "Commented on contribution successfully", $data);
@@ -167,7 +196,7 @@ class ContributionApiController extends Controller
             ->first()?->pivot;
 
         $data = [
-            'comment' =>   $comment
+            'comment' => $comment,
         ];
 
         return apiResponse(true, "Comment fetched successfully", $data);
@@ -176,14 +205,14 @@ class ContributionApiController extends Controller
     public function voteContribution(Request $request, string $id)
     {
         $validatedData = $request->validate([
-            'type' => 'required|in:upvote,downvote'
+            'type' => 'required|in:upvote,downvote',
         ]);
         $userId = Auth::user()->id;
 
         $contribution = $this->contributionApiService->vote($id, $userId, $validatedData['type']);
 
         $data = [
-            'contributions' => $contribution
+            'contributions' => $contribution,
         ];
 
         return apiResponse(true, "Comment fetched successfully", $data);
@@ -196,7 +225,7 @@ class ContributionApiController extends Controller
         $contribution = $this->contributionApiService->save($id, $userId);
 
         $data = [
-            'contributions' => $contribution
+            'contributions' => $contribution,
         ];
 
         return apiResponse(true, "Contribution saved successfully", $data);
@@ -206,12 +235,12 @@ class ContributionApiController extends Controller
     {
         $validatedData = $request->validated();
 
-        $contribution = $this->contributionApiService->get($id);
-        $studentUser = $this->userApiService->get($contribution->user_id);
+        $contribution         = $this->contributionApiService->get($id);
+        $studentUser          = $this->userApiService->get($contribution->user_id);
         $marketingCoordinator = $this->userApiService->get(
             conds: [
                 'faculty_id' => $studentUser->faculty_id,
-                'role' => Role::MARKETING_COORDINATOR->label()
+                'role'       => Role::MARKETING_COORDINATOR->label(),
             ]
         );
 
