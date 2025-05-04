@@ -13,12 +13,9 @@ class UpdateCoordinatorApiRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $currentUserId = Auth::id();
-
-        $routeCoordinatorId = $this->route('id');
-
-        // Prevent user from updating another coordinator's data
-        if ((int) $currentUserId !== (int) $routeCoordinatorId) {
+        $userId = Auth::user()->id;
+        $manager = $this->managerApiService->get($userId);
+        if (!$manager) {
             return false;
         }
 
