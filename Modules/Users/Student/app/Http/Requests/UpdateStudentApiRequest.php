@@ -47,6 +47,7 @@ class UpdateStudentApiRequest extends FormRequest
         return [
             'name' => 'required',
             'faculty_id' => 'nullable|exists:faculties,id',
+            'academic_year_id' => 'nullable|exists:academic_years,id',
             'password' => 'nullable|confirmed',
             'email' => [
                 'required',

@@ -33,6 +33,7 @@ class StoreStudentApiRequest extends FormRequest
         return [
             'name' => 'required',
             'faculty_id' => 'required|exists:faculties,id',
+            'academic_year_id' => 'required|exists:academic_years,id',
             'password' => 'required|confirmed',
             'email' => 'required|unique:users,email'
         ];
