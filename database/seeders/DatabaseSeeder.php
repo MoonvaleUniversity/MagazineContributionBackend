@@ -35,29 +35,29 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user = User::firstOrCreate([
-            'email' => 'yunbira2412@gmail.com',
+            'email' => 'student@mv.com',
         ], [
             'name' => 'Bee Bee',
-            'password' => 'password',
+            'password' => 'student123',
             'faculty_id' => $faculty->id,
             'academic_year_id' => $academicYear->id,
             'email_verified_at' => now()
         ]);
 
-        $user = User::where('email', 'yunbira2412@gmail.com')->first();
+        $user = User::where('email', 'student@mv.com')->first();
         if (!$user->hasRole(Role::STUDENT->label())) {
             $user->assignRole(Role::STUDENT->label());
         }
 
         $admin = User::firstOrCreate([
-            'email' => 'admin@mv.com',
+            'email' => 'moonvaleuniversity@gmail.com',
         ], [
             'name' => 'Moonvale Admin',
-            'password' => 'password',
+            'password' => 'admin123',
             'email_verified_at' => now(),
         ]);
 
-        $admin = User::where('email', 'admin@mv.com')->first();
+        $admin = User::where('email', 'moonvaleuniversity@gmail.com')->first();
         if (!$admin->hasRole(Role::ADMIN->label())) {
             $admin->assignRole(Role::ADMIN->label());
         }
@@ -66,7 +66,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'manager@mv.com',
         ], [
             'name' => 'Moonvale Marketing Manager',
-            'password' => 'password',
+            'password' => 'manager123',
             'email_verified_at' => now(),
         ]);
 
@@ -79,7 +79,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'coordinator@mv.com'
         ], [
             'name' => 'Moonvale Marketing Coordinator',
-            'password' => 'password',
+            'password' => 'coordinator123',
             'email_verified_at' => now()
         ]);
 
@@ -91,7 +91,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'guest@mv.com'
         ], [
             'name' => 'Guest 1',
-            'password' => 'password',
+            'password' => 'guest123',
             'faculty_id' => $faculty->id,
             'email_verified_at' => now()
         ]);
