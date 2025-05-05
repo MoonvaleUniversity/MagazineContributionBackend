@@ -2,6 +2,7 @@
 
 namespace Modules\Contribution\App\Http\Requests;
 
+use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Modules\ClosureDate\Services\ClosureDateApiServiceInterface;
@@ -19,28 +20,35 @@ class UpdateContributionApiRequest extends FormRequest
     {
         $userId = Auth::user()->id;
         $user = $this->userApiService->get($userId);
-        if (!$user->hasPermissionTo('contribution.create', 'api')) {
-            return false;
-        }
 
-        $closureDateId = $this->input('closure_date_id');
-
-        if (!$closureDateId) {
-            return false;
-        }
-
-        $closureDate = $this->closureDateApiService->get($closureDateId);
-
-        if (!$closureDate) {
-            return false;
-        }
-
-        if (now()->startOfDay()->greaterThan($closureDate->final_closure_date)) {
+        if (!$user->hasPermissionTo('contribution.edit', 'api')) {
             return false;
         }
 
         $contributionId = $this->route('contribution');
         $contribution = $this->contributionApiService->get($contributionId);
+
+        if ($user->hasRole(Role::STUDENT->label())) {
+            $closureDateId = $this->input('closure_date_id');
+
+            if (!$closureDateId) {
+                return false;
+            }
+
+            $closureDate = $this->closureDateApiService->get($closureDateId);
+
+            if (!$closureDate) {
+                return false;
+            }
+
+            if (now()->startOfDay()->greaterThan($closureDate->final_closure_date)) {
+                return false;
+            }
+        } else {
+            $this->merge([
+                'closure_date_id' => $contribution->closure_date_id
+            ]);
+        }
 
         $currentImageCount = $contribution->images()->count();
         $deleteCount = count((array) $this->input('delete_images', []));
