@@ -38,6 +38,10 @@ class  StoreContributionApiRequest extends FormRequest
             return false;
         }
 
+        $this->merge([
+            'user_id' => $userId
+        ]);
+
         return true;
     }
 
