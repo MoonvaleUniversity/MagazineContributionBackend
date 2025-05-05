@@ -46,7 +46,8 @@ class UpdateContributionApiRequest extends FormRequest
             }
         } else {
             $this->merge([
-                'closure_date_id' => $contribution->closure_date_id
+                'closure_date_id' => $contribution->closure_date_id,
+                'user_id' => $contribution->user_id
             ]);
         }
 
