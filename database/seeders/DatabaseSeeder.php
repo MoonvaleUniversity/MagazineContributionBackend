@@ -79,6 +79,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'coordinator@mv.com'
         ], [
             'name' => 'Moonvale Marketing Coordinator',
+            'faculty_id' => $faculty->id,
             'password' => 'coordinator123',
             'email_verified_at' => now()
         ]);
