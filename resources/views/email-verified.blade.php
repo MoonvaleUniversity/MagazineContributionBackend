@@ -28,3 +28,9 @@
 </body>
 
 </html>
+
+<script>
+    setTimeout(() => {
+        window.location.href= "http://localhost:5174/login";
+    },2000)
+</script>
