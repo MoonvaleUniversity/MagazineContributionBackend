@@ -22,7 +22,7 @@
 
         <p class="text-dark">
             Your email has been verified. Please login again to use our service.
-            <a class="text-decoration-none" href="http://localhost:5173">Login now</a>
+            <a class="text-decoration-none" href="http://localhost:5174/login">Login now</a>
         </p>
     </div>
 </body>
