@@ -55,7 +55,7 @@ class ContributionApiController extends Controller
             return apiResponse(false, 'User email not found', [], 400);
         }
         if (!$marketingCoordinator) {
-            return apiResponse(false, 'Marketing coordinator not found for this faculty.');
+            return apiResponse(false, 'Marketing coordinator not found for this faculty.', [], 400);
         }
 
         $contribution = $this->contributionApiService->get(conds: ['user_id' => $validatedData['user_id'], 'name' => $validatedData['name']]);
